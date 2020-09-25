@@ -1,0 +1,29 @@
+statement   : if-expr
+            : while-expr
+            : expr
+            : function-def
+
+if-expr     : KEYWORD:if LPAREN num-expr RPAREN LCPAREN (statement)* RCPAREN
+                (KEYWORD:elif LCPAREN (statement)* RCPAREN)*
+                (KEYWORD:else LCPAREN (statement)* RCPAREN)?
+
+while-expr  : KEYWORD:while LPAREN num-expr RPAREN LCPAREN (statement)* RCPAREN
+
+expr        : (KEYWORD:var | KEYWORD:int | KEYWORD:float) IDENTIFIER EQ num-expr
+
+num-expr    : comp-expr ((KEYWORD:AND|KEYWORD:OR) comp-expr)*
+
+comp-expr   : NOT comp-expr
+            : arith-expr ((EE|LT|GT|LTE|GTE) arith-expr)*
+
+arith-expr  : term ((PLUS|MINUS) term)*
+
+term        : factor ((MUL|DIV) factor)*
+
+factor      : (PLUS|MINUS) factor
+            : power
+
+power       : atom (POW factor) *
+
+atom        : INT|FLOAT|IDENTIFIER
+            : LPAREN expr RPAREN
