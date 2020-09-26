@@ -1,6 +1,6 @@
 import exo_token
 from errors import RTError
-from exo_classes import Number
+from exo_classes import Number, Function
 
 
 class SymbolTable:
@@ -32,11 +32,11 @@ class Interpreter:
 
     @staticmethod
     def visit_NumberNode(node, context):
-        return RuntimeResult().success(
+        return RTResult().success(
             Number(node.tok.value).set_context(context).set_pos(node.pos_start, node.pos_end))
 
     def visit_BinOpNode(self, node, context):
-        res = RuntimeResult()
+        res = RTResult()
         left = res.register(self.visit(node.left_node, context))
         if res.error:
             return res
@@ -81,7 +81,7 @@ class Interpreter:
             return res.success(result.set_pos(node.pos_start, node.pos_end))
 
     def visit_UnaryOpNode(self, node, context):
-        res = RuntimeResult()
+        res = RTResult()
         number = res.register(self.visit(node.node, context))
 
         if res.error:
@@ -100,7 +100,7 @@ class Interpreter:
 
     @staticmethod
     def visit_VarAccessNode(node, context):
-        res = RuntimeResult()
+        res = RTResult()
         var_name = node.var_name_tok.value
         value = context.symbol_table.get(var_name)
 
@@ -113,7 +113,7 @@ class Interpreter:
         return res.success(value)
 
     def visit_VarAssignNode(self, node, context):
-        res = RuntimeResult()
+        res = RTResult()
         var_name = node.var_name_tok.value
         value = res.register(self.visit(node.value_node, context))
 
@@ -124,7 +124,7 @@ class Interpreter:
         return res.success(value)
 
     def visit_IfNode(self, node, context):
-        res = RuntimeResult()
+        res = RTResult()
         for condition, statements in node.cases:
             condition_value = res.register(self.visit(condition, context))
             if res.error:
@@ -145,11 +145,11 @@ class Interpreter:
         return res.success(None)
 
     def visit_WhileNode(self, node, context):
-        res = RuntimeResult()
+        res = RTResult()
         condition_value = res.register(self.visit(node.condition, context))
 
         while not condition_value.value == 0:
-            for statement in node.statements:
+            for statement in node.body_nodes:
                 res.register(self.visit(statement, context))
                 if res.error:
                     return res
@@ -158,8 +158,20 @@ class Interpreter:
 
         return res.success(None)
 
+    @staticmethod
+    def visit_FunctionDefNode(node, context):
+        res = RTResult()
+        name = node.fun_name_tok.value
+        body_nodes = node.body_nodes
+        return_node = node.return_node
+        arg_names = (arg_name.value for arg_name in node.arg_name_toks)
+        function_var = Function(name, body_nodes, arg_names, return_node)
 
-class RuntimeResult:
+        context.symbol_table.set(name, function_var)
+        return res.success(function_var)
+
+
+class RTResult:
     def __init__(self):
         self.value = None
         self.error = None

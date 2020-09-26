@@ -16,9 +16,6 @@ expr        : TYPE IDENTIFIER EQ num-expr
             : KEYWORD:return num-expr
 
 num-expr    : comp-expr ((KEYWORD:AND|KEYWORD:OR) comp-expr)*
-            : function-call
-
-function-call: IDENTIFIER LPAREN num-expr? (COMMA num-expr)* RPAREN
 
 comp-expr   : NOT comp-expr
             : arith-expr ((EE|LT|GT|LTE|GTE) arith-expr)*
@@ -30,7 +27,9 @@ term        : factor ((MUL|DIV) factor)*
 factor      : (PLUS|MINUS) factor
             : power
 
-power       : atom (POW factor)*
+power       : call (POW factor)*
+
+call        : atom (LPAREN num-expr? (COMMA num-expr)* RPAREN)?
 
 atom        : INT|FLOAT|IDENTIFIER
             : LPAREN expr RPAREN

@@ -51,6 +51,9 @@ class Lexer:
             elif self.current_char == '}':
                 tokens.append(Token(exo_token.TT_RCPAREN, pos_start=self.pos))
                 self.advance()
+            elif self.current_char == ',':
+                tokens.append(Token(exo_token.TT_COMMA, pos_start=self.pos))
+                self.advance()
             elif self.current_char == '!':
                 tok, error = self.make_not_equals()
                 if error:

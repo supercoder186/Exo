@@ -70,13 +70,29 @@ class WhileNode:
 
 
 class FunctionDefNode:
-    def __init__(self, fun_name_tok, arg_name_toks, statements, return_node):
+    def __init__(self, fun_name_tok, arg_name_toks, body_nodes, return_node):
         self.fun_name_tok = fun_name_tok
-        self.args = arg_name_toks
-        self.statements = statements
+        self.arg_name_toks = arg_name_toks
+        self.body_nodes = body_nodes
         self.return_node = return_node
+
+        self.pos_start = fun_name_tok.pos_start
+        self.pos_end = return_node.pos_end
+
+
+class FunctionCallNode:
+    def __init__(self, call_node, arg_nodes):
+        self.call_node = call_node
+        self.arg_nodes = arg_nodes
+        self.pos_start = call_node.pos_start
+        if len(arg_nodes) > 0:
+            self.pos_end = arg_nodes[-1].pos_end
+        else:
+            self.pos_end = call_node.pos_end
 
 
 class ReturnNode:
     def __init__(self, value_node):
         self.value_node = value_node
+        self.pos_start = value_node.pos_start
+        self.pos_end = value_node.pos_end

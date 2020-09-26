@@ -1,7 +1,7 @@
 import exo_token
 from errors import InvalidSyntaxError
 from exo_node import NumberNode, BinOpNode, UnaryOpNode, VarAssignNode, VarAccessNode, IfNode, WhileNode, \
-    FunctionDefNode, ReturnNode
+    FunctionDefNode, FunctionCallNode, ReturnNode
 
 
 class Parser:
@@ -143,9 +143,10 @@ class Parser:
         else:
             statement = res.register(self.num_expr())
             if res.error:
-                return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
-                                                      'Expected if, while, function def, variable assignment or numeric expression!'
-                                                      ), override=True)
+                return res.failure(
+                    InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
+                                       'Expected if, while, function def, variable assignment or numeric expression!'
+                                       ), override=True)
             return res.success(statement)
 
     def function_def(self):
@@ -268,8 +269,8 @@ class Parser:
         if res.error:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
                                                   'Expected numeric expression'))
-        else:
-            return res.success(node)
+
+        return res.success(node)
 
     def comp_expr(self):
         res = ParseResult()
@@ -313,7 +314,48 @@ class Parser:
         return self.power()
 
     def power(self):
-        return self.bin_op(self.atom, (exo_token.TT_POW,), self.factor)
+        return self.bin_op(self.call, (exo_token.TT_POW,), self.factor)
+
+    def call(self):
+        res = ParseResult()
+        atom = res.register(self.atom())
+        if res.error:
+            return res
+
+        if self.current_tok.type == exo_token.TT_LPAREN:
+            res.register_advance()
+            self.advance()
+            arg_nodes = []
+
+            if self.current_tok.type == exo_token.TT_RPAREN:
+                res.register_advance()
+                self.advance()
+            else:
+                arg_nodes.append(res.register(self.num_expr()))
+                if res.error:
+                    return res.failure(InvalidSyntaxError(
+                        self.current_tok.pos_start, self.current_tok.pos_end,
+                        "Expected numeric expression"
+                    ))
+
+                while self.current_tok.type == exo_token.TT_COMMA:
+                    res.register_advance()
+                    self.advance()
+
+                    arg_nodes.append(res.register(self.num_expr()))
+                    if res.error:
+                        return res
+
+                if self.current_tok.type != exo_token.TT_RPAREN:
+                    return res.failure(InvalidSyntaxError(
+                        self.current_tok.pos_start, self.current_tok.pos_end,
+                        f"Expected ',' or ')'"
+                    ))
+
+                res.register_advance()
+                self.advance()
+            return res.success(FunctionCallNode(atom, arg_nodes))
+        return res.success(atom)
 
     def atom(self):
         res = ParseResult()
