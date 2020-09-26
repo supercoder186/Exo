@@ -228,7 +228,7 @@ class Function(Value):
         return res.success(value)
 
     def copy(self):
-        copy = Function(self.name, self.body_nodes, self.arg_names, self.body_nodes)
+        copy = Function(self.name, self.body_nodes, self.arg_names, self.return_node)
         copy.set_context(self.context)
         copy.set_pos(self.pos_start, self.pos_end)
         return copy
