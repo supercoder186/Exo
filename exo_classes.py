@@ -1,5 +1,4 @@
 from errors import RTError
-from interpreter import Interpreter, RuntimeResult, SymbolTable
 from context import Context
 
 
@@ -194,6 +193,7 @@ class Function(Value):
         self.arg_names = arg_names
 
     def execute(self, args):
+        from interpreter import Interpreter, RuntimeResult, SymbolTable
         res = RuntimeResult()
         interpreter = Interpreter()
         new_context = Context(self.name, self.context, self.pos_start)
