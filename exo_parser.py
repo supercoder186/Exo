@@ -1,5 +1,5 @@
 import exo_token
-from errors import InvalidSyntaxError
+from exo_errors import InvalidSyntaxError
 from exo_node import NumberNode, BinOpNode, UnaryOpNode, VarAssignNode, VarAccessNode, IfNode, WhileNode, \
     FunctionDefNode, FunctionCallNode, ReturnNode
 

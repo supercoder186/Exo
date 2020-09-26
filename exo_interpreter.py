@@ -1,5 +1,5 @@
 import exo_token
-from errors import RTError
+from exo_errors import RTError
 from exo_classes import Number, Function
 
 
@@ -109,7 +109,7 @@ class Interpreter:
                 node.pos_start, node.pos_end, f"'{var_name} is not defined'", context
             ))
 
-        value = value.copy().set_pos(node.pos_start, node.pos_end)
+        value = value.set_pos(node.pos_start, node.pos_end)
         return res.success(value)
 
     def visit_VarAssignNode(self, node, context):
@@ -181,7 +181,6 @@ class Interpreter:
         value_to_call = res.register(self.visit(node.call_node, context))
         if res.error:
             return res
-        value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end)
 
         for arg_node in node.arg_nodes:
             args.append(res.register(self.visit(arg_node, context)))

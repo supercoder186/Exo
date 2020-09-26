@@ -1,5 +1,5 @@
-from context import Context
-from errors import RTError
+from exo_context import Context
+from exo_errors import RTError
 
 
 class Value:
@@ -60,7 +60,7 @@ class Value:
         return None, self.illegal_operation()
 
     def execute(self, args):
-        from interpreter import RTResult
+        from exo_interpreter import RTResult
         return RTResult().failure(self.illegal_operation())
 
     def copy(self):
@@ -195,7 +195,7 @@ class Function(Value):
         self.arg_names = arg_names
 
     def execute(self, args):
-        from interpreter import Interpreter, RTResult, SymbolTable
+        from exo_interpreter import Interpreter, RTResult, SymbolTable
         res = RTResult()
         interpreter = Interpreter()
         fun_context = Context(self.name, self.context, self.pos_start)
@@ -224,7 +224,7 @@ class Function(Value):
         for node in self.body_nodes:
             interpreter.visit(node, fun_context)
 
-        value = interpreter.visit(self.return_node[0], fun_context)
+        value = interpreter.visit(self.return_node, fun_context)
         return res.success(value)
 
     def copy(self):

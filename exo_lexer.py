@@ -1,5 +1,5 @@
 import exo_token
-from errors import IllegalCharError, ExpectedCharError
+from exo_errors import IllegalCharError, ExpectedCharError
 from exo_token import ALPHANUMERIC, DIGITS, KEYWORDS, TYPES, LETTERS, Token
 
 

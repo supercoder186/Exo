@@ -1,9 +1,9 @@
-from context import Context
+from exo_context import Context
 from exo_classes import Number
-from interpreter import Interpreter
-from interpreter import SymbolTable
-from lexer import Lexer
-from parser import Parser
+from exo_interpreter import Interpreter
+from exo_interpreter import SymbolTable
+from exo_lexer import Lexer
+from exo_parser import Parser
 
 global_symbol_table = SymbolTable()
 global_symbol_table.set('null', Number(0))
