@@ -67,3 +67,14 @@ class WhileNode:
 
         self.pos_start = self.condition.pos_start
         self.pos_end = self.statements[-1].pos_end
+
+class FunctionDefNode:
+    def __init__(self, fun_name_tok, arg_name_toks, statements, return_node):
+        self.fun_name_tok = fun_name_tok
+        self.args = arg_name_toks
+        self.statements = statements
+        self.return_node = return_node
+
+class ReturnNode:
+    def __init__(self, value_node):
+        self.value_node = value_node
