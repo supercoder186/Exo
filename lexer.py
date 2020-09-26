@@ -1,6 +1,6 @@
 import exo_token
 from errors import IllegalCharError, ExpectedCharError
-from exo_token import ALPHANUMERIC, DIGITS, KEYWORDS, LETTERS, Token
+from exo_token import ALPHANUMERIC, DIGITS, KEYWORDS, TYPES, LETTERS, Token
 
 
 class Lexer:
@@ -102,7 +102,12 @@ class Lexer:
             id_str += self.current_char
             self.advance()
 
-        tok_type = exo_token.TT_KEYWORD if id_str in KEYWORDS else exo_token.TT_IDENTIFIER
+        if id_str in KEYWORDS:
+            tok_type = exo_token.TT_KEYWORD
+        elif id_str in TYPES:
+            tok_type = exo_token.TT_TYPE
+        else:
+            tok_type = exo_token.TT_IDENTIFIER
         return Token(tok_type, id_str, pos_start, self.pos.copy())
 
     def make_not_equals(self):

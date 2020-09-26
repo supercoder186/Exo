@@ -10,6 +10,7 @@ TT_POW = 'POW'
 TT_EQ = 'EQ'
 TT_IDENTIFIER = 'IDENTIFIER'
 TT_KEYWORD = 'KEYWORD'
+TT_TYPE = 'TYPE'
 TT_LPAREN = 'LPAREN'
 TT_RPAREN = 'RPAREN'
 TT_LCPAREN = 'LCPAREN'
@@ -26,9 +27,6 @@ DIGITS = '0123456789'
 LETTERS = string.ascii_letters
 ALPHANUMERIC = DIGITS + LETTERS
 KEYWORDS = [
-    'var',
-    'float',
-    'int',
     'and',
     'or',
     'not',
@@ -36,6 +34,11 @@ KEYWORDS = [
     'elif',
     'else',
     'while'
+]
+TYPES = [
+    'var',
+    'float',
+    'int',
 ]
 
 
