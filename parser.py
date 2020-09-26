@@ -1,6 +1,7 @@
 import exo_token
 from errors import InvalidSyntaxError
-from exo_node import NumberNode, BinOpNode, UnaryOpNode, VarAssignNode, VarAccessNode, IfNode, WhileNode, FunctionDefNode, ReturnNode
+from exo_node import NumberNode, BinOpNode, UnaryOpNode, VarAssignNode, VarAccessNode, IfNode, WhileNode, \
+    FunctionDefNode, ReturnNode
 
 
 class Parser:
@@ -191,7 +192,6 @@ class Parser:
             to_return = NumberNode(exo_token.Token(exo_token.TT_INT, 0, statements[-1].pos_end, statements[-1].pos_end))
 
         return res.success(FunctionDefNode(fun_name_tok, arg_toks, statements, to_return))
-
 
     def if_expr(self):
         res = ParseResult()

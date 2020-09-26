@@ -1,8 +1,8 @@
 from context import Context
+from exo_classes import Number
 from interpreter import Interpreter
 from interpreter import SymbolTable
 from lexer import Lexer
-from exo_classes import Number
 from parser import Parser
 
 global_symbol_table = SymbolTable()
@@ -26,7 +26,7 @@ def run(file_name, text):
 
     context = Context('<program>')
     context.symbol_table = global_symbol_table
-    
+
     result = interpreter.visit(ast.node, context)
 
     return result.value, result.error

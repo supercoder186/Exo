@@ -1,6 +1,5 @@
 import exo
 
-
 while True:
     text = input('Exo >>> ')
     value, error = exo.run('<stdin>', text)
