@@ -34,7 +34,8 @@ KEYWORDS = [
     'elif',
     'else',
     'while',
-    'fun'
+    'fun',
+    'return'
 ]
 TYPES = [
     'var',
