@@ -10,7 +10,7 @@ class SymbolTable:
 
     def get(self, name):
         value = self.symbols.get(name, None)
-        if value == None and self.parent:
+        if value is None and self.parent:
             return self.parent.get(name)
         return value
 
@@ -46,15 +46,15 @@ class Interpreter:
             return res
 
         if node.op_tok.type == exo_token.TT_PLUS:
-            result, error = left.add_to(right), None
+            result, error = left.add_to(right)
         elif node.op_tok.type == exo_token.TT_MINUS:
-            result, error = left.sub_by(right), None
+            result, error = left.sub_by(right)
         elif node.op_tok.type == exo_token.TT_MUL:
-            result, error = left.multiply_with(right), None
+            result, error = left.multiply_with(right)
         elif node.op_tok.type == exo_token.TT_DIV:
             result, error = left.divide_by(right)
         elif node.op_tok.type == exo_token.TT_POW:
-            result, error = left.power_by(right), None
+            result, error = left.power_by(right)
         elif node.op_tok.type == exo_token.TT_EE:
             result, error = left.get_comparison_eq(right)
         elif node.op_tok.type == exo_token.TT_NE:
@@ -158,17 +158,40 @@ class Interpreter:
 
         return res.success(None)
 
+    def visit_ReturnNode(self, node, context):
+        return self.visit(node.value_node, context)
+
     @staticmethod
     def visit_FunctionDefNode(node, context):
         res = RTResult()
         name = node.fun_name_tok.value
         body_nodes = node.body_nodes
         return_node = node.return_node
-        arg_names = (arg_name.value for arg_name in node.arg_name_toks)
-        function_var = Function(name, body_nodes, arg_names, return_node)
+        arg_names = [arg_name.value for arg_name in node.arg_name_toks]
+        function_var = Function(name, body_nodes, arg_names, return_node).set_context(context)\
+            .set_pos(node.pos_start, node.pos_end)
 
         context.symbol_table.set(name, function_var)
         return res.success(function_var)
+
+    def visit_FunctionCallNode(self, node, context):
+        res = RTResult()
+        args = []
+
+        value_to_call = res.register(self.visit(node.call_node, context))
+        if res.error:
+            return res
+        value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end)
+
+        for arg_node in node.arg_nodes:
+            args.append(res.register(self.visit(arg_node, context)))
+            if res.error:
+                return res
+
+        return_value = res.register(value_to_call.execute(args))
+        if res.error:
+            return res
+        return res.success(return_value.value)
 
 
 class RTResult:

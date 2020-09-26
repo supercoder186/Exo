@@ -180,19 +180,19 @@ class Parser:
             return statements_res
 
         statements = statements_res.node
-        to_return = None
+        return_node = None
 
         for statement in statements:
             if type(statement) == ReturnNode:
-                to_return = statement
+                return_node = statement
                 while statements[-1] != statement:
                     del statements[-1]
                 del statements[-1]
 
-        if to_return is None:
-            to_return = NumberNode(exo_token.Token(exo_token.TT_INT, 0, statements[-1].pos_end, statements[-1].pos_end))
+        if return_node is None:
+            return_node = NumberNode(exo_token.Token(exo_token.TT_INT, 0, statements[-1].pos_end, statements[-1].pos_end))
 
-        return res.success(FunctionDefNode(fun_name_tok, arg_toks, statements, to_return))
+        return res.success(FunctionDefNode(fun_name_tok, arg_toks, statements, return_node))
 
     def if_expr(self):
         res = ParseResult()

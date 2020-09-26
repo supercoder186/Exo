@@ -60,7 +60,8 @@ class Value:
         return None, self.illegal_operation()
 
     def execute(self, args):
-        return RuntimeResult().failure(self.illegal_operation())
+        from interpreter import RTResult
+        return RTResult().failure(self.illegal_operation())
 
     def copy(self):
         raise Exception('No copy method defined')
@@ -223,7 +224,7 @@ class Function(Value):
         for node in self.body_nodes:
             interpreter.visit(node, fun_context)
 
-        value = interpreter.visit(self.return_node, fun_context)
+        value = interpreter.visit(self.return_node[0], fun_context)
         return res.success(value)
 
     def copy(self):
