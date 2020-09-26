@@ -10,9 +10,10 @@ if-expr     : KEYWORD:if LPAREN num-expr RPAREN LCPAREN (statement)* RCPAREN
 
 while-expr  : KEYWORD:while LPAREN num-expr RPAREN LCPAREN (statement)* RCPAREN
 
-function-def: KEYWORD:fun TYPE? IDENTIFIER LPAREN IDENTIFIER? (COMMA IDENTIFIER)* RPAREN LCPAREN (statement)* (KEYWORD:return num-expr)? RCPAREN
+function-def: KEYWORD:fun TYPE? IDENTIFIER LPAREN (TYPE IDENTIFIER)? (COMMA TYPE IDENTIFIER)* RPAREN LCPAREN (statement)* (KEYWORD:return num-expr)? RCPAREN
 
 expr        : TYPE IDENTIFIER EQ num-expr
+            : KEYWORD:return num-expr
 
 num-expr    : comp-expr ((KEYWORD:AND|KEYWORD:OR) comp-expr)*
             : function-call
