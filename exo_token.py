@@ -33,7 +33,8 @@ KEYWORDS = [
     'if',
     'elif',
     'else',
-    'while'
+    'while',
+    'fun'
 ]
 TYPES = [
     'var',
