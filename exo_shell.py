@@ -1,8 +1,8 @@
-import exo
+import exo_runner
 
 while True:
     text = input('Exo >>> ')
-    value, error = exo.run('<stdin>', text)
+    value, error = exo_runner.run('<stdin>', text)
     if error:
         print(error.as_string())
     else:

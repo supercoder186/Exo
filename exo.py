@@ -1,32 +1,14 @@
-from exo_context import Context
-from exo_classes import Number
-from exo_interpreter import Interpreter
-from exo_interpreter import SymbolTable
-from exo_lexer import Lexer
-from exo_parser import Parser
+import exo_runner
 
-global_symbol_table = SymbolTable()
-global_symbol_table.set('null', Number(0))
-global_symbol_table.set('false', Number(0))
-global_symbol_table.set('true', Number(1))
+# fn = input('Enter file name: ')
+fn = 'test.exo'
 
+with open('test.exo') as file:
+    code = file.read()
+    code = code.replace('\n', ' ')
 
-def run(file_name, text):
-    lexer = Lexer(file_name, text)
-    tokens, error = lexer.make_tokens()
-    if error:
-        return None, error
-
-    parser = Parser(tokens)
-    ast = parser.parse()
-    if ast.error:
-        return None, ast.error
-
-    interpreter = Interpreter()
-
-    context = Context('<program>')
-    context.symbol_table = global_symbol_table
-
-    result = interpreter.visit(ast.node, context)
-
-    return result.value, result.error
+value, error = exo_runner.run(fn, code)
+if error:
+    print(error.as_string())
+else:
+    print(value)
