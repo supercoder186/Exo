@@ -69,6 +69,18 @@ class WhileNode:
         self.pos_end = self.statements[-1].pos_end
 
 
+class ForNode:
+    def __init__(self, var_name_tok, start, stop, step, body_nodes):
+        self.var_name_tok = var_name_tok
+        self.start = start
+        self.stop = stop
+        self.step = step
+        self.body_nodes = body_nodes
+
+        self.pos_start = var_name_tok.pos_start
+        self.pos_end = self.body_nodes[-1].pos_end
+
+
 class FunctionDefNode:
     def __init__(self, fun_name_tok, arg_name_toks, body_nodes, return_node):
         self.fun_name_tok = fun_name_tok

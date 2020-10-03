@@ -1,6 +1,6 @@
 import exo_token
 from exo_errors import InvalidSyntaxError
-from exo_node import NumberNode, BinOpNode, UnaryOpNode, VarAssignNode, VarAccessNode, IfNode, WhileNode, \
+from exo_node import NumberNode, BinOpNode, UnaryOpNode, VarAssignNode, VarAccessNode, IfNode, WhileNode, ForNode, \
     FunctionDefNode, FunctionCallNode, ReturnNode
 
 
@@ -88,11 +88,11 @@ class Parser:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
                                                   "Expected ')'"))
 
-        result = self.parse_braces()
-        if result.error:
-            return result
+        statements_res = res.register(self.parse_braces())
+        if res.error:
+            return res
 
-        return res.success((condition, result.node))
+        return res.success((condition, statements_res))
 
     def parse_args(self):
         res = ParseResult()
@@ -117,6 +117,37 @@ class Parser:
 
         return res.success(arg_toks)
 
+    def parse_for_args(self):
+        res = ParseResult()
+        arguments = []
+
+        res.register_advance()
+        self.advance()
+
+        if self.current_tok.type != exo_token.TT_LPAREN:
+            return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
+                                                  "Expected '('"))
+
+        for i in range(3):
+            res.register_advance()
+            self.advance()
+
+            num = res.register(self.arith_expr())
+            if res.error:
+                return res
+
+            arguments.append(num)
+
+            if i < 2 and self.current_tok.type != exo_token.TT_COMMA:
+                return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
+                                                      "Expected ','"))
+
+        if self.current_tok.type != exo_token.TT_RPAREN:
+            return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
+                                                  "Expected ')'"))
+
+        return res.success(arguments)
+
     def statement(self):
         res = ParseResult()
         if self.current_tok.matches(exo_token.TT_KEYWORD, 'if'):
@@ -127,6 +158,11 @@ class Parser:
             return res.success(statement)
         elif self.current_tok.matches(exo_token.TT_KEYWORD, 'while'):
             statement = res.register(self.while_expr())
+            if res.error:
+                return res
+            return res.success(statement)
+        elif self.current_tok.matches(exo_token.TT_KEYWORD, 'for'):
+            statement = res.register(self.for_expr())
             if res.error:
                 return res
             return res.success(statement)
@@ -169,17 +205,14 @@ class Parser:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
                                                   "Expected an '('"))
 
-        args_res = self.parse_args()
-        if args_res.error:
-            return args_res
+        arg_toks = res.register(self.parse_args())
+        if res.error:
+            return res
 
-        arg_toks = args_res.node
+        statements = res.register(self.parse_braces())
+        if res.error:
+            return res
 
-        statements_res = self.parse_braces()
-        if statements_res.error:
-            return statements_res
-
-        statements = statements_res.node
         return_node = None
 
         for statement in statements:
@@ -190,76 +223,111 @@ class Parser:
                 del statements[-1]
 
         if return_node is None:
-            return_node = NumberNode(exo_token.Token(exo_token.TT_INT, 0, statements[-1].pos_end, statements[-1].pos_end))
+            return_node = NumberNode(
+                exo_token.Token(exo_token.TT_INT, 0, statements[-1].pos_end, statements[-1].pos_end))
 
         return res.success(FunctionDefNode(fun_name_tok, arg_toks, statements, return_node))
 
     def if_expr(self):
         res = ParseResult()
         cases = []
-        result = self.parse_conditional_statement()
-        if result.error:
-            return res.failure(result.error)
+        body_statements = res.register(self.parse_conditional_statement())
+        if res.error:
+            return res
 
-        cases.append(result.node)
+        cases.append(body_statements)
         while self.current_tok.matches('KEYWORD', 'elif'):
-            result = self.parse_conditional_statement()
-            if result.error:
-                return res.failure(result.error)
+            body_statements = res.register(self.parse_conditional_statement())
+            if res.error:
+                return res
 
-            cases.append(result.node)
+            cases.append(body_statements)
 
         else_case = None
         if self.current_tok.matches('KEYWORD', 'else'):
-            result = self.parse_braces()
-            if result.error:
-                return res.failure(result.error)
+            body_statements = res.register(self.parse_conditional_statement())
+            if res.error:
+                return res
 
-            else_case = result.node
+            else_case = body_statements
 
         return res.success(IfNode(cases, else_case))
 
     def while_expr(self):
         res = ParseResult()
-        result = self.parse_conditional_statement()
-        if result.error:
-            return res.failure(result.error)
+        condition, statements = res.register(self.parse_conditional_statement())
+        if res.error:
+            return res
 
-        condition, statements = result.node
         return res.success(WhileNode(condition, statements))
+
+    def for_expr(self):
+        pos_start = self.current_tok.pos_start
+        res = ParseResult()
+        res.register_advance()
+        self.advance()
+
+        if self.current_tok.type != exo_token.TT_IDENTIFIER:
+            return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
+                                                  'Expected an identifier'))
+
+        var_name_tok = self.current_tok
+
+        res.register_advance()
+        self.advance()
+
+        if not self.current_tok.matches(exo_token.TT_KEYWORD, 'in'):
+            return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
+                                                  "Expected 'in'"))
+
+        args = res.register(self.parse_for_args())
+        if res.error:
+            return res
+
+        start, stop, step = args
+
+        statements = res.register(self.parse_braces())
+        if res.error:
+            return res
+
+        return res.success(ForNode(var_name_tok, start, stop, step, statements))
 
     def expr(self):
         res = ParseResult()
         if self.current_tok.type == exo_token.TT_TYPE:
-            res.register_advance()
-            self.advance()
-            if self.current_tok.type != exo_token.TT_IDENTIFIER:
-                return res.failure(
-                    InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected an identifier'))
-
-            var_name = self.current_tok
-
-            res.register_advance()
-            self.advance()
-            if self.current_tok.type != exo_token.TT_EQ:
-                return res.failure(
-                    InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected ='))
-
-            res.register_advance()
-            self.advance()
-            expr = res.register(self.num_expr())
-            if res.error:
-                return res
-
-            return res.success(VarAssignNode(var_name, expr))
+            return self.var_assignment()
         elif self.current_tok.matches(exo_token.TT_KEYWORD, 'return'):
             res.register_advance()
             self.advance()
-            num_res = self.num_expr()
-            if num_res.error:
-                return num_res
+            num_res = res.register(self.num_expr())
+            if res.error:
+                return res
 
-            return res.success(ReturnNode(num_res.node))
+            return res.success(ReturnNode(num_res))
+
+    def var_assignment(self):
+        res = ParseResult()
+        res.register_advance()
+        self.advance()
+        if self.current_tok.type != exo_token.TT_IDENTIFIER:
+            return res.failure(
+                InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected an identifier'))
+
+        var_name = self.current_tok
+
+        res.register_advance()
+        self.advance()
+        if self.current_tok.type != exo_token.TT_EQ:
+            return res.failure(
+                InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected ='))
+
+        res.register_advance()
+        self.advance()
+        expr = res.register(self.num_expr())
+        if res.error:
+            return res
+
+        return res.success(VarAssignNode(var_name, expr))
 
     def num_expr(self):
         res = ParseResult()

@@ -1,6 +1,7 @@
 import exo_token
-from exo_errors import RTError
 from exo_classes import Number, Function
+from exo_errors import RTError
+from exo_node import VarAssignNode
 
 
 class SymbolTable:
@@ -158,6 +159,32 @@ class Interpreter:
 
         return res.success(None)
 
+    def visit_ForNode(self, node, context):
+        res = RTResult()
+        init_assignment_node = VarAssignNode(node.var_name_tok, node.start)
+        step_val = res.register(self.visit(node.step, context)).value
+        if res.error:
+            return res
+        stop_val = res.register(self.visit(node.stop, context)).value
+        if res.error:
+            return res
+        res.register(self.visit(init_assignment_node, context))
+        if res.error:
+            return res
+
+        def var_val():
+            return context.symbol_table.get(node.var_name_tok.value).value
+
+        while abs(var_val()) < abs(stop_val):
+            for statement in node.body_nodes:
+                res.register(self.visit(statement, context))
+                if res.error:
+                    return res
+
+            context.symbol_table.set(node.var_name_tok.value, Number(var_val() + step_val))
+
+        return res.success(None)
+
     def visit_ReturnNode(self, node, context):
         return self.visit(node.value_node, context)
 
@@ -168,7 +195,7 @@ class Interpreter:
         body_nodes = node.body_nodes
         return_node = node.return_node
         arg_names = [arg_name.value for arg_name in node.arg_name_toks]
-        function_var = Function(name, body_nodes, arg_names, return_node).set_context(context)\
+        function_var = Function(name, body_nodes, arg_names, return_node).set_context(context) \
             .set_pos(node.pos_start, node.pos_end)
 
         context.symbol_table.set(name, function_var)

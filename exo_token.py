@@ -35,6 +35,8 @@ KEYWORDS = [
     'elif',
     'else',
     'while',
+    'for',
+    'in',
     'fun',
     'return'
 ]

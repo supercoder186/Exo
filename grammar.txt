@@ -1,5 +1,6 @@
 statement   : if-expr
             : while-expr
+            : for-expr
             : expr
             : num-expr
             : function-def
@@ -10,10 +11,13 @@ if-expr     : KEYWORD:if LPAREN num-expr RPAREN LCPAREN (statement)* RCPAREN
 
 while-expr  : KEYWORD:while LPAREN num-expr RPAREN LCPAREN (statement)* RCPAREN
 
+for-expr    : KEYWORD:for IDENTIFIER KEYWORD:in LPAREN arith-expr COMMA arith-expr COMMA arith-expr RPAREN LCPAREN (statement)* RCPAREN
+
 function-def: KEYWORD:fun TYPE? IDENTIFIER LPAREN (TYPE IDENTIFIER)? (COMMA TYPE IDENTIFIER)* RPAREN LCPAREN (statement)* (KEYWORD:return num-expr)? RCPAREN
 
-expr        : TYPE IDENTIFIER EQ num-expr
-            : KEYWORD:return num-expr
+expr        : KEYWORD:return num-expr
+
+assignment  : TYPE IDENTIFIER EQ num-expr
 
 num-expr    : comp-expr ((KEYWORD:AND|KEYWORD:OR) comp-expr)*
 
