@@ -67,7 +67,10 @@ class IfNode:
         if self.else_case:
             self.pos_end = self.else_case[1][-1].pos_end
         else:
-            self.pos_end = self.cases[-1][1][-1].pos_end
+            if self.cases[-1][1]:
+                self.pos_end = self.cases[-1][1][-1].pos_end
+            else:
+                self.pos_end = self.cases[-1][0].pos_end
 
 
 class WhileNode:
