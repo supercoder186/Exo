@@ -35,10 +35,12 @@ power       : call (POW factor)*
 
 call        : atom (LPAREN val-expr? (COMMA val-expr)* RPAREN)?
 
-atom       : list (LSQUARE arith-expr RSQUARE)
+atom        : storable (LSQUARE arith-expr RSQUARE)
 
-list        : value
-            : LSQUARE (val-expr (COMMA val-expr)*) RSQUARE
+value       : unit
+            : list
 
-value        : INT|FLOAT|STRING|IDENTIFIER
+list        : LSQUARE (val-expr (COMMA val-expr)*) RSQUARE
+
+unit        : INT|FLOAT|STRING|IDENTIFIER
             : LPAREN expr RPAREN

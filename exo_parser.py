@@ -387,7 +387,7 @@ class Parser:
 
     def call(self):
         res = ParseResult()
-        atom = res.register(self.atom())
+        atom = res.register(self.value())
         if res.error:
             return res
 
@@ -426,7 +426,15 @@ class Parser:
             return res.success(FunctionCallNode(atom, arg_nodes))
         return res.success(atom)
 
-    def atom(self):
+    def list(self):
+        res = ParseResult()
+        if self.current_tok.type == exo_token.TT_LSQUARE:
+            res.register_advance()
+            self.advance()
+        else:
+            return self.value()
+
+    def value(self):
         res = ParseResult()
         tok = self.current_tok
         if tok.type in (exo_token.TT_INT, exo_token.TT_FLOAT):
