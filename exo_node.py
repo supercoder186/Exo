@@ -65,7 +65,7 @@ class IfNode:
 
         self.pos_start = self.cases[0][0].pos_start
         if self.else_case:
-            self.pos_end = self.else_case[1][-1].pos_end
+            self.pos_end = self.else_case[-1].pos_end
         else:
             if self.cases[-1][1]:
                 self.pos_end = self.cases[-1][1][-1].pos_end

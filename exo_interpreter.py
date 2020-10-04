@@ -136,11 +136,13 @@ class Interpreter:
             if res.error:
                 return res
 
-            if not condition_value == 0:
+            if not condition_value.value == 0:
                 for statement in statements:
                     res.register(self.visit(statement, context))
                     if res.error:
                         return res
+
+                return res.success(None)
 
         if node.else_case:
             for statement in node.else_case:

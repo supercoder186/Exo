@@ -19,14 +19,15 @@ def run(file_name, text):
 
     parser = Parser(tokens)
     ast = parser.parse()
-    if ast.error:
-        return None, ast.error
+    if ast[-1].error:
+        return None, ast[-1].error
 
     interpreter = Interpreter()
 
     context = Context('<program>')
     context.symbol_table = global_symbol_table
 
-    result = interpreter.visit(ast.node, context)
+    for statement in ast:
+        result = interpreter.visit(statement.node, context)
 
     return result.value, result.error

@@ -13,10 +13,12 @@ class Parser:
 
     def parse(self):
         res = self.statement()
-        if not res.error and self.current_tok.type != exo_token.TT_EOF:
-            return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
-                                                  'Expected an operation'))
-        return res
+        statements = [res]
+        while not res.error and self.current_tok.type != exo_token.TT_EOF:
+            res = self.statement()
+            statements.append(res)
+
+        return statements
 
     def advance(self):
         self.tok_idx += 1
@@ -245,7 +247,7 @@ class Parser:
 
         else_case = None
         if self.current_tok.matches('KEYWORD', 'else'):
-            body_statements = res.register(self.parse_conditional_statement())
+            body_statements = res.register(self.parse_braces())
             if res.error:
                 return res
 
