@@ -1,7 +1,7 @@
 import exo_token
 from exo_errors import InvalidSyntaxError
-from exo_node import NumberNode, BinOpNode, UnaryOpNode, VarAssignNode, VarAccessNode, IfNode, WhileNode, ForNode, \
-    FunctionDefNode, FunctionCallNode, ReturnNode
+from exo_node import NumberNode, StringNode, BinOpNode, UnaryOpNode, VarAssignNode, VarAccessNode, IfNode, WhileNode, \
+    ForNode, FunctionDefNode, FunctionCallNode, ReturnNode
 
 
 class Parser:
@@ -262,7 +262,6 @@ class Parser:
         return res.success(WhileNode(condition, statements))
 
     def for_expr(self):
-        pos_start = self.current_tok.pos_start
         res = ParseResult()
         res.register_advance()
         self.advance()
@@ -432,7 +431,10 @@ class Parser:
             res.register_advance()
             self.advance()
             return res.success(NumberNode(tok))
-
+        elif tok.type == exo_token.TT_STRING:
+            res.register_advance()
+            self.advance()
+            return res.success(StringNode(tok))
         elif tok.type == exo_token.TT_IDENTIFIER:
             res.register_advance()
             self.advance()

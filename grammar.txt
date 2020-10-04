@@ -35,5 +35,5 @@ power       : call (POW factor)*
 
 call        : atom (LPAREN num-expr? (COMMA num-expr)* RPAREN)?
 
-atom        : INT|FLOAT|IDENTIFIER
+atom        : INT|FLOAT|STRING|IDENTIFIER
             : LPAREN expr RPAREN

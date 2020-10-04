@@ -22,6 +22,8 @@ class Lexer:
                 self.advance()
             elif self.current_char in DIGITS:
                 tokens.append(self.make_number())
+            elif self.current_char in '"':
+                tokens.append(self.make_string())
             elif self.current_char in LETTERS:
                 tokens.append(self.make_identifier())
             elif self.current_char == '+':
@@ -96,6 +98,20 @@ class Lexer:
             return Token(exo_token.TT_INT, int(num_str), pos_start, self.pos.copy())
         else:
             return Token(exo_token.TT_FLOAT, float(num_str), pos_start, self.pos.copy())
+
+    def make_string(self):
+        val_str = ''
+        pos_start = self.pos.copy()
+        self.advance()
+        while self.current_char != '"':
+            if self.current_char is None:
+                return None, ExpectedCharError(pos_start, self.pos, 'Expected end of string, reached EOF')
+
+            val_str += self.current_char
+            self.advance()
+
+        self.advance()
+        return Token(exo_token.TT_STRING, val_str, pos_start, self.pos.copy())
 
     def make_identifier(self):
         id_str = ''

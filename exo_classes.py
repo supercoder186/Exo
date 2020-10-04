@@ -186,6 +186,42 @@ class Number(Value):
         return str(self.value)
 
 
+class String(Value):
+    def __init__(self, value):
+        super().__init__()
+        self.value = value
+        self.pos_start = None
+        self.pos_end = None
+        self.context = None
+
+    def add_to(self, other):
+        if isinstance(other, String):
+            return String(self.value + other.value).set_context(self.context), None
+        else:
+            return None, self.illegal_operation(other)
+
+    def get_comparison_eq(self, other):
+        if isinstance(other, String):
+            return Number(int(self.value == other.value)).set_context(self.context), None
+        else:
+            return None, self.illegal_operation(other)
+
+    def get_comparison_ne(self, other):
+        if isinstance(other, String):
+            return Number(int(self.value != other.value)).set_context(self.context), None
+        else:
+            return None, self.illegal_operation(other)
+
+    def copy(self):
+        copy = String(self.value)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+
+    def __repr__(self):
+        return self.value
+
+
 class Function(Value):
     def __init__(self, name, body_nodes, arg_names, return_node):
         super().__init__()

@@ -2,6 +2,7 @@ import string
 
 TT_INT = 'INT'
 TT_FLOAT = 'FLOAT'
+TT_STRING = 'STRING'
 TT_PLUS = 'PLUS'
 TT_MINUS = 'MINUS'
 TT_MUL = 'MUL'
@@ -44,6 +45,7 @@ TYPES = [
     'var',
     'float',
     'int',
+    'string'
 ]
 
 
