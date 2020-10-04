@@ -2,24 +2,24 @@ statement   : if-expr
             : while-expr
             : for-expr
             : expr
-            : num-expr
+            : val-expr
             : function-def
 
-if-expr     : KEYWORD:if LPAREN num-expr RPAREN LCPAREN (statement)* RCPAREN
+if-expr     : KEYWORD:if LPAREN val-expr RPAREN LCPAREN (statement)* RCPAREN
                 (KEYWORD:elif LCPAREN (statement)* RCPAREN)*
                 (KEYWORD:else LCPAREN (statement)* RCPAREN)?
 
-while-expr  : KEYWORD:while LPAREN num-expr RPAREN LCPAREN (statement)* RCPAREN
+while-expr  : KEYWORD:while LPAREN val-expr RPAREN LCPAREN (statement)* RCPAREN
 
 for-expr    : KEYWORD:for IDENTIFIER KEYWORD:in LPAREN arith-expr COMMA arith-expr COMMA arith-expr RPAREN LCPAREN (statement)* RCPAREN
 
-function-def: KEYWORD:fun TYPE? IDENTIFIER LPAREN (TYPE IDENTIFIER)? (COMMA TYPE IDENTIFIER)* RPAREN LCPAREN (statement)* (KEYWORD:return num-expr)? RCPAREN
+function-def: KEYWORD:fun TYPE? IDENTIFIER LPAREN (TYPE IDENTIFIER)? (COMMA TYPE IDENTIFIER)* RPAREN LCPAREN (statement)* (KEYWORD:return val-expr)? RCPAREN
 
-expr        : KEYWORD:return num-expr
+expr        : KEYWORD:return val-expr
 
-assignment  : TYPE IDENTIFIER EQ num-expr
+assignment  : TYPE IDENTIFIER EQ val-expr
 
-num-expr    : comp-expr ((KEYWORD:AND|KEYWORD:OR) comp-expr)*
+val-expr    : comp-expr ((KEYWORD:AND|KEYWORD:OR) comp-expr)*
 
 comp-expr   : NOT comp-expr
             : arith-expr ((EE|LT|GT|LTE|GTE) arith-expr)*
@@ -33,7 +33,12 @@ factor      : (PLUS|MINUS) factor
 
 power       : call (POW factor)*
 
-call        : atom (LPAREN num-expr? (COMMA num-expr)* RPAREN)?
+call        : atom (LPAREN val-expr? (COMMA val-expr)* RPAREN)?
 
-atom        : INT|FLOAT|STRING|IDENTIFIER
+atom       : list (LSQUARE arith-expr RSQUARE)
+
+list        : value
+            : LSQUARE (val-expr (COMMA val-expr)*) RSQUARE
+
+value        : INT|FLOAT|STRING|IDENTIFIER
             : LPAREN expr RPAREN

@@ -1,9 +1,8 @@
 int a = 1
-int b = 4
+int b = 3
 for x in (1, b + 1, 1){
     int a = a * x
 }
-
 
 if(a > 20){
     int a = 100
