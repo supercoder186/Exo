@@ -18,6 +18,12 @@ class StringNode:
         return f'{self.tok}'
 
 
+class ListNode:
+    def __init__(self, elms):
+        self.elms = elms
+        self.pos_start = 
+
+
 class BinOpNode:
     def __init__(self, left_node, op_tok, right_node):
         self.left_node = left_node
