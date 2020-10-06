@@ -1,5 +1,5 @@
-from exo_context import Context
 from exo_classes import Number
+from exo_context import Context
 from exo_interpreter import Interpreter
 from exo_interpreter import SymbolTable
 from exo_lexer import Lexer

@@ -1,7 +1,7 @@
 import exo_token
 from exo_errors import InvalidSyntaxError
-from exo_node import NumberNode, StringNode, BinOpNode, UnaryOpNode, VarAssignNode, VarAccessNode, IfNode, WhileNode, \
-    ForNode, FunctionDefNode, FunctionCallNode, ReturnNode
+from exo_node import NumberNode, StringNode, ListNode, BinOpNode, UnaryOpNode, VarAssignNode, VarAccessNode, IfNode, \
+    WhileNode, ForNode, FunctionDefNode, FunctionCallNode, ReturnNode
 
 
 class Parser:
@@ -443,6 +443,7 @@ class Parser:
 
     def list(self):
         res = ParseResult()
+        pos_start = self.current_tok.pos_start.copy()
         res.register_advance()
         self.advance()
         elms = []
@@ -460,7 +461,10 @@ class Parser:
                 res.register_advance()
                 self.advance()
 
-        print(elms)
+        pos_end = self.current_tok.pos_end.copy()
+        res.register_advance()
+        self.advance()
+        return res.success(ListNode(pos_start, pos_end, elms))
 
     def unit(self):
         res = ParseResult()

@@ -19,9 +19,13 @@ class StringNode:
 
 
 class ListNode:
-    def __init__(self, elms):
+    def __init__(self, pos_start, pos_end, elms):
         self.elms = elms
-        self.pos_start = 
+        self.pos_start = pos_start
+        self.pos_end = pos_end
+
+    def __repr__(self):
+        return f'({self.elms})'
 
 
 class BinOpNode:
