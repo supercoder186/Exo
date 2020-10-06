@@ -35,7 +35,7 @@ power       : call (POW factor)*
 
 call        : atom (LPAREN val-expr? (COMMA val-expr)* RPAREN)?
 
-atom        : storable (LSQUARE arith-expr RSQUARE)
+atom        : value (LSQUARE arith-expr RSQUARE)
 
 value       : unit
             : list
