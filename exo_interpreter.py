@@ -1,5 +1,5 @@
 import exo_token
-from exo_classes import Number, String, Function
+from exo_classes import Number, String, List, Function
 from exo_errors import RTError
 from exo_node import VarAssignNode
 
@@ -40,6 +40,17 @@ class Interpreter:
     def visit_StringNode(node, context):
         return RTResult().success(
             String(node.tok.value).set_context(context).set_pos(node.pos_start, node.pos_end))
+
+    def visit_ListNode(self, node, context):
+        res = RTResult()
+        elms = node.elms
+        processed_elms = []
+        for elem in elms:
+            processed_elem = res.register(self.visit(elem, context))
+            processed_elms.append(processed_elem)
+
+        return RTResult().success(
+            List(processed_elms).set_context(context).set_pos(node.pos_start, node.pos_end))
 
     def visit_BinOpNode(self, node, context):
         res = RTResult()

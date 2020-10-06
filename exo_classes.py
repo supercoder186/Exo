@@ -63,6 +63,9 @@ class Value:
         from exo_interpreter import RTResult
         return RTResult().failure(self.illegal_operation())
 
+    def at_index(self, index):
+        return None, self.illegal_operation()
+
     def copy(self):
         raise Exception('No copy method defined')
 
@@ -212,6 +215,17 @@ class String(Value):
         else:
             return None, self.illegal_operation(other)
 
+    def at_index(self, index):
+        pos_start = index.pos_start
+        pos_end = index.pos_end
+        if not isinstance(index, Number):
+            return None, self.illegal_operation(index)
+
+        if index.value >= len(self.value) or index.value < 0:
+            return None, RTError(pos_start, pos_end, 'Index out of bounds!', self.context)
+
+        return String(self.value[index]).set_context(self.context), None
+
     def copy(self):
         copy = String(self.value)
         copy.set_pos(self.pos_start, self.pos_end)
@@ -220,6 +234,58 @@ class String(Value):
 
     def __repr__(self):
         return self.value
+
+
+class List(Value):
+    def __init__(self, value):
+        super().__init__()
+        self.value = value
+        self.pos_start = None
+        self.pos_end = None
+        self.context = None
+
+    def add_to(self, other):
+        if isinstance(other, List):
+            return List(self.value + other.value).set_context(self.context), None
+        else:
+            return List(self.value.append(other)).set_context(self.context), None
+
+    def sub_by(self, other):
+        if isinstance(other, List):
+            elms = other.value
+            val_list = self.value
+            for elem in elms:
+                val_list.remove(elem.value)
+
+            return List(val_list).set_context(self.context), None
+        else:
+            return List(self.value.remove(other.value)).set_context(self.context), None
+
+    def get_comparison_eq(self, other):
+        if isinstance(other, List):
+            return Number(int(self.value == other.value)).set_context(self.context), None
+        else:
+            return None, self.illegal_operation(other)
+
+    def get_comparison_ne(self, other):
+        if isinstance(other, List):
+            return Number(int(self.value != other.value)).set_context(self.context), None
+        else:
+            return None, self.illegal_operation(other)
+
+    def at_index(self, index):
+        pos_start = index.pos_start
+        pos_end = index.pos_end
+        if not isinstance(index, Number):
+            return None, self.illegal_operation(index)
+
+        if index.value >= len(self.value) or index.value < 0:
+            return None, RTError(pos_start, pos_end, 'Index out of bounds!', self.context)
+
+        return List(self.value[index]).set_context(self.context), None
+
+    def __repr__(self):
+        return str(self.value)
 
 
 class Function(Value):

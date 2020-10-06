@@ -26,8 +26,12 @@ def run(file_name, text):
 
     context = Context('<program>')
     context.symbol_table = global_symbol_table
+    result = None
 
     for statement in ast:
         result = interpreter.visit(statement.node, context)
 
-    return result.value, result.error
+    if result:
+        return result.value, result.error
+    else:
+        return None
