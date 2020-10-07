@@ -327,6 +327,19 @@ class Parser:
 
         res.register_advance()
         self.advance()
+
+        index_node = None
+        if self.current_tok.type == exo_token.TT_LSQUARE:
+            res.register_advance()
+            self.advance()
+            index_node = res.register(self.val_expr())
+            if res.error:
+                return res
+
+        if self.current_tok.type != exo_token.TT_RSQUARE:
+            return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
+                                                  "Expected ']'"))
+
         if self.current_tok.type != exo_token.TT_EQ:
             return res.failure(
                 InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected ='))
@@ -337,7 +350,10 @@ class Parser:
         if res.error:
             return res
 
-        return res.success(VarAssignNode(var_name, expr))
+        if index_node:
+            return res.success(VarAssignNode(var_name, expr, index_node))
+        else:
+            return res.success(VarAssignNode(var_name, expr))
 
     def val_expr(self):
         res = ParseResult()
@@ -480,7 +496,25 @@ class Parser:
         elif tok.type == exo_token.TT_IDENTIFIER:
             res.register_advance()
             self.advance()
-            return res.success(VarAccessNode(tok))
+            index_node = None
+            if self.current_tok.type == exo_token.TT_LSQUARE:
+                res.register_advance()
+                self.advance()
+                index_node = res.register(self.val_expr())
+                if res.error:
+                    return res
+
+                if self.current_tok.type != exo_token.TT_RSQUARE:
+                    return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
+                                                          "Expected ']'"))
+
+            res.register_advance()
+            self.advance()
+
+            if index_node:
+                return res.success(VarAccessNode(tok, index_node))
+            else:
+                return res.success(VarAccessNode(tok))
 
         elif tok.type == exo_token.TT_LPAREN:
             res.register_advance()
