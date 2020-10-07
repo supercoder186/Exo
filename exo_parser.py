@@ -336,9 +336,11 @@ class Parser:
             if res.error:
                 return res
 
-        if self.current_tok.type != exo_token.TT_RSQUARE:
-            return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
-                                                  "Expected ']'"))
+            if self.current_tok.type != exo_token.TT_RSQUARE:
+                return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
+                                                      "Expected ']'"))
+            res.register_advance()
+            self.advance()
 
         if self.current_tok.type != exo_token.TT_EQ:
             return res.failure(

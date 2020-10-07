@@ -115,8 +115,7 @@ class Interpreter:
         else:
             return res.success(number)
 
-    @staticmethod
-    def visit_VarAccessNode(node, context):
+    def visit_VarAccessNode(self, node, context):
         res = RTResult()
         var_name = node.var_name_tok.value
         value = context.symbol_table.get(var_name)
@@ -126,7 +125,17 @@ class Interpreter:
                 node.pos_start, node.pos_end, f"'{var_name} is not defined'", context
             ))
 
-        value = value.set_pos(node.pos_start, node.pos_end)
+        if node.index_node:
+            index_val = res.register(self.visit(node.index_node, context))
+            if res.error:
+                return res
+            value = res.register(value.get_index(index_val))
+            if res.error:
+                return res
+
+            value = value.set_pos(node.pos_start, node.pos_end)
+        else:
+            value = value.set_pos(node.pos_start, node.pos_end)
         return res.success(value)
 
     def visit_VarAssignNode(self, node, context):
@@ -134,11 +143,29 @@ class Interpreter:
         var_name = node.var_name_tok.value
         value = res.register(self.visit(node.value_node, context))
 
-        if res.error:
-            return res
+        if node.index_node:
+            list_val = context.symbol_table.get(var_name)
+            index_val = res.register(self.visit(node.index_node, context))
+            if res.error:
+                return res
 
-        context.symbol_table.set(var_name, value)
-        return res.success(value)
+            if list_val is None:
+                return res.failure(RTError(
+                    node.pos_start, node.pos_end, f"'{var_name} is not defined'", context
+                ))
+
+            updated_list_val = res.register(list_val.set_index(index_val, value))
+            if res.error:
+                return res
+
+            context.symbol_table.set(var_name, updated_list_val)
+            return res.success(updated_list_val)
+        else:
+            if res.error:
+                return res
+
+            context.symbol_table.set(var_name, value)
+            return res.success(value)
 
     def visit_IfNode(self, node, context):
         res = RTResult()

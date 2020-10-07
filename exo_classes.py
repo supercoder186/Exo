@@ -63,7 +63,10 @@ class Value:
         from exo_interpreter import RTResult
         return RTResult().failure(self.illegal_operation())
 
-    def at_index(self, index):
+    def get_index(self, index):
+        return None, self.illegal_operation()
+
+    def set_index(self, index, value):
         return None, self.illegal_operation()
 
     def copy(self):
@@ -215,7 +218,7 @@ class String(Value):
         else:
             return None, self.illegal_operation(other)
 
-    def at_index(self, index):
+    def get_index(self, index):
         pos_start = index.pos_start
         pos_end = index.pos_end
         if not isinstance(index, Number):
@@ -273,7 +276,7 @@ class List(Value):
         else:
             return None, self.illegal_operation(other)
 
-    def at_index(self, index):
+    def get_index(self, index):
         pos_start = index.pos_start
         pos_end = index.pos_end
         if not isinstance(index, Number):
@@ -282,7 +285,25 @@ class List(Value):
         if index.value >= len(self.value) or index.value < 0:
             return None, RTError(pos_start, pos_end, 'Index out of bounds!', self.context)
 
-        return List(self.value[index]).set_context(self.context), None
+        return self.value[index.value].set_context(self.context), None
+
+    def set_index(self, index, value):
+        from exo_interpreter import RTResult
+        res = RTResult()
+        pos_start = index.pos_start
+        pos_end = index.pos_end
+        if not isinstance(index, Number):
+            return res.failure(self.illegal_operation(index))
+
+        if index.value > len(self.value) or index.value < 0:
+            return res.failure(RTError(pos_start, pos_end, 'Index out of bounds!', self.context))
+
+        if index.value == len(self.value):
+            self.value.append(value.value)
+        else:
+            self.value[index.value] = value.value
+
+        return res.success(List(self.value).set_context(self.context))
 
     def __repr__(self):
         return str(self.value)
