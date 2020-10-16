@@ -1,13 +1,6 @@
-int a = 1
-int b = 3
-for x in (1, b + 1, 1){
-    int a = a * x
+fun add(int a, int b){
+    int c = a + b
+    return c
 }
 
-if(a > 20){
-    int a = 100
-} else {
-    int a = 0
-}
-
-a
+add(1, 2)

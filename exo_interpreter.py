@@ -129,9 +129,9 @@ class Interpreter:
             index_val = res.register(self.visit(node.index_node, context))
             if res.error:
                 return res
-            value = res.register(value.get_index(index_val))
-            if res.error:
-                return res
+            value, error = value.get_index(index_val)
+            if error:
+                return res.failure(error)
 
             value = value.set_pos(node.pos_start, node.pos_end)
         else:

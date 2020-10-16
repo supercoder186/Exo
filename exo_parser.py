@@ -114,14 +114,14 @@ class Parser:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end, 'Expected variable identifier!'))
 
+            arg_toks.append(self.current_tok)
+
             res.register_advance()
             self.advance()
 
             if self.current_tok.type not in (exo_token.TT_COMMA, exo_token.TT_RPAREN):
                 return res.failure(
                     InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected ','"))
-
-            arg_toks.append(self.current_tok)
             if self.current_tok.type == exo_token.TT_COMMA:
                 res.register_advance()
                 self.advance()
@@ -510,8 +510,8 @@ class Parser:
                     return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
                                                           "Expected ']'"))
 
-            res.register_advance()
-            self.advance()
+                res.register_advance()
+                self.advance()
 
             if index_node:
                 return res.success(VarAccessNode(tok, index_node))
