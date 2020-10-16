@@ -309,45 +309,77 @@ class List(Value):
         return str(self.value)
 
 
-class Function(Value):
-    def __init__(self, name, body_nodes, arg_names, return_node):
+class BaseFunction(Value):
+    def __init__(self, name):
         super().__init__()
+        self.name = name or "<anonymous>"
+
+    def generate_new_context(self):
+        from exo_interpreter import SymbolTable
+        new_context = Context(self.name, self.context, self.pos_start)
+        new_context.symbol_table = SymbolTable(new_context.parent.symbol_table)
+        return new_context
+
+    def check_args(self, arg_names, args):
+        from exo_interpreter import RTResult
+        res = RTResult()
+
+        if len(args) > len(arg_names):
+            return res.failure(RTError(
+                self.pos_start, self.pos_end,
+                f"{len(args) - len(arg_names)} too many args passed into {self}",
+                self.context
+            ))
+
+        if len(args) < len(arg_names):
+            return res.failure(RTError(
+                self.pos_start, self.pos_end,
+                f"{len(arg_names) - len(args)} too few args passed into {self}",
+                self.context
+            ))
+
+        return res.success(None)
+
+    @staticmethod
+    def populate_args(arg_names, args, exec_ctx):
+        for i in range(len(args)):
+            arg_name = arg_names[i]
+            arg_value = args[i]
+            arg_value.set_context(exec_ctx)
+            exec_ctx.symbol_table.set(arg_name, arg_value)
+
+    def check_and_populate_args(self, arg_names, args, exec_ctx):
+        from exo_interpreter import RTResult
+        res = RTResult()
+        res.register(self.check_args(arg_names, args))
+        if res.error: return res
+        self.populate_args(arg_names, args, exec_ctx)
+        return res.success(None)
+
+
+class Function(BaseFunction):
+    def __init__(self, name, body_nodes, arg_names, return_node):
+        super().__init__(name)
         self.name = name or "<anonymous>"
         self.body_nodes = body_nodes
         self.return_node = return_node
         self.arg_names = arg_names
 
     def execute(self, args):
-        from exo_interpreter import Interpreter, RTResult, SymbolTable
+        from exo_interpreter import Interpreter, RTResult
         res = RTResult()
         interpreter = Interpreter()
-        fun_context = Context(self.name, self.context, self.pos_start)
-        fun_context.symbol_table = SymbolTable(fun_context.parent.symbol_table)
-
-        if len(args) > len(self.arg_names):
-            return res.failure(RTError(
-                self.pos_start, self.pos_end,
-                f"{len(args) - len(self.arg_names)} too many args passed into '{self.name}'",
-                self.context
-            ))
-
-        if len(args) < len(self.arg_names):
-            return res.failure(RTError(
-                self.pos_start, self.pos_end,
-                f"{len(self.arg_names) - len(args)} too few args passed into '{self.name}'",
-                self.context
-            ))
-
-        for i in range(len(args)):
-            arg_name = self.arg_names[i]
-            arg_value = args[i]
-            arg_value.set_context(fun_context)
-            fun_context.symbol_table.set(arg_name, arg_value)
+        exec_ctx = self.generate_new_context()
+        res.register(self.check_and_populate_args(self.arg_names, args, exec_ctx))
+        if res.error:
+            return res
 
         for node in self.body_nodes:
-            interpreter.visit(node, fun_context)
+            interpreter.visit(node, exec_ctx)
 
-        value = interpreter.visit(self.return_node, fun_context)
+        if res.error:
+            return res
+        value = interpreter.visit(self.return_node, exec_ctx)
         return res.success(value)
 
     def copy(self):
