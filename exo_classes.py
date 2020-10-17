@@ -382,10 +382,12 @@ class Function(BaseFunction):
             return res
         value = interpreter.visit(self.return_node, exec_ctx)
         if isinstance(value, RTResult):
-            if value.error:
-                return value
+            value = res.register(value)
+            if res.error:
+                return res
 
-            value = value.value
+            return res.success(value)
+
         return res.success(value)
 
     def copy(self):
