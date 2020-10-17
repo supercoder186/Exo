@@ -1,4 +1,4 @@
-from exo_classes import Number
+from exo_classes import Number, BuiltInFunction
 from exo_context import Context
 from exo_interpreter import Interpreter
 from exo_interpreter import SymbolTable
@@ -9,6 +9,9 @@ global_symbol_table = SymbolTable()
 global_symbol_table.set('null', Number(0))
 global_symbol_table.set('false', Number(0))
 global_symbol_table.set('true', Number(1))
+global_symbol_table.set("print", BuiltInFunction("print"))
+global_symbol_table.set("input", BuiltInFunction("input"))
+global_symbol_table.set("input_int", BuiltInFunction("input_int"))
 
 
 def run(file_name, text):

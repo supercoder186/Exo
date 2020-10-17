@@ -10,5 +10,3 @@ with open('test.exo') as file:
 value, error = exo_runner.run(fn, code)
 if error:
     print(error.as_string())
-else:
-    print(value)

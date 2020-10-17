@@ -251,6 +251,7 @@ class Interpreter:
         args = []
 
         value_to_call = res.register(self.visit(node.call_node, context))
+        value_to_call.context = context
         if res.error:
             return res
         value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end)
@@ -263,7 +264,7 @@ class Interpreter:
         return_value = res.register(value_to_call.execute(args))
         if res.error:
             return res
-        return res.success(return_value.value)
+        return res.success(return_value)
 
 
 class RTResult:
