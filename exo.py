@@ -5,7 +5,6 @@ fn = 'test.exo'
 
 with open('test.exo') as file:
     code = file.read()
-    code = code.replace('\n', ' ')
 
 value, error = exo_runner.run(fn, code)
 if error:

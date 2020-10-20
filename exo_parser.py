@@ -15,15 +15,33 @@ class Parser:
         res = self.statement()
         statements = [res]
         while not res.error and self.current_tok.type != exo_token.TT_EOF:
+            if self.current_tok.type != exo_token.TT_NEWLINE:
+                return res.failure(
+                    InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected newline!')),
+            else:
+                while self.current_tok.type == exo_token.TT_NEWLINE:
+                    self.advance()
+
             res = self.statement()
             statements.append(res)
 
         return statements
 
-    def advance(self):
-        self.tok_idx += 1
-        if self.tok_idx < len(self.tokens):
-            self.current_tok = self.tokens[self.tok_idx]
+    def advance(self, ignore_newline=True):
+        if ignore_newline:
+            if not self.current_tok:
+                self.tok_idx += 1
+                if self.tok_idx < len(self.tokens):
+                    self.current_tok = self.tokens[self.tok_idx]
+
+            while self.current_tok.type == exo_token.TT_NEWLINE and ignore_newline:
+                self.tok_idx += 1
+                if self.tok_idx < len(self.tokens):
+                    self.current_tok = self.tokens[self.tok_idx]
+        else:
+            self.tok_idx += 1
+            if self.tok_idx < len(self.tokens):
+                self.current_tok = self.tokens[self.tok_idx]
 
         return self.current_tok
 
@@ -69,7 +87,7 @@ class Parser:
             statements.append(statement)
 
         res.register_advance()
-        self.advance()
+        self.advance(False)
         return res.success(statements)
 
     def parse_conditional_statement(self):
@@ -317,6 +335,9 @@ class Parser:
 
     def var_assignment(self):
         res = ParseResult()
+
+        type_tok = self.current_tok
+
         res.register_advance()
         self.advance()
         if self.current_tok.type != exo_token.TT_IDENTIFIER:
@@ -353,9 +374,9 @@ class Parser:
             return res
 
         if index_node:
-            return res.success(VarAssignNode(var_name, expr, index_node))
+            return res.success(VarAssignNode(type_tok, var_name, expr, index_node))
         else:
-            return res.success(VarAssignNode(var_name, expr))
+            return res.success(VarAssignNode(type_tok, var_name, expr))
 
     def val_expr(self):
         res = ParseResult()

@@ -70,10 +70,16 @@ class Lexer:
                 tokens.append(tok)
             elif self.current_char == '=':
                 tokens.append(self.make_operator(exo_token.TT_EQ, exo_token.TT_EE))
+                self.advance()
             elif self.current_char == '<':
                 tokens.append(self.make_operator(exo_token.TT_LT, exo_token.TT_LTE))
+                self.advance()
             elif self.current_char == '>':
                 tokens.append(self.make_operator(exo_token.TT_GT, exo_token.TT_GTE))
+                self.advance()
+            elif self.current_char == '\n':
+                tokens.append(Token(exo_token.TT_NEWLINE, pos_start=self.pos))
+                self.advance()
             else:
                 pos_start = self.pos.copy()
                 char = self.current_char

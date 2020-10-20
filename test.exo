@@ -1,6 +1,9 @@
-fun add(int a, int b){
-    int c = a + b
-    return c
-}
+var s = ""
 
-print(add(1, 2))
+for i in (0, 6, 1){
+    for j in (0, i, 1){
+        var s = s + i + " "
+    }
+    print(s)
+    var s = ""
+}
