@@ -55,7 +55,7 @@ The syntax for initialization and assignment is identical.
 
 ```
 var a = 6.0
-a = a + 1
+var a = a + 1
 ```
 
 <a name="if"></a>
