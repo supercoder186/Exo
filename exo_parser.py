@@ -9,34 +9,33 @@ class Parser:
         self.tokens = tokens
         self.tok_idx = -1
         self.current_tok = None
+        self.prev_tok = None
         self.advance()
 
     def parse(self):
         res = self.statement()
         statements = [res]
         while not res.error and self.current_tok.type != exo_token.TT_EOF:
-            if self.current_tok.type != exo_token.TT_NEWLINE:
+            if self.prev_tok.type != exo_token.TT_NEWLINE:
                 return res.failure(
-                    InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected newline!')),
-            else:
-                while self.current_tok.type == exo_token.TT_NEWLINE:
-                    self.advance()
+                    InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected newline!'))
 
             res = self.statement()
             statements.append(res)
 
         return statements
 
-    def advance(self, ignore_newline=True):
+    def advance(self):
         self.tok_idx += 1
         if self.tok_idx < len(self.tokens):
             self.current_tok = self.tokens[self.tok_idx]
 
-        if ignore_newline:
-            while self.current_tok.type == exo_token.TT_NEWLINE:
-                self.tok_idx += 1
-                if self.tok_idx < len(self.tokens):
-                    self.current_tok = self.tokens[self.tok_idx]
+        while self.current_tok.type == exo_token.TT_NEWLINE:
+            self.tok_idx += 1
+            if self.tok_idx < len(self.tokens):
+                self.current_tok = self.tokens[self.tok_idx]
+                if self.tok_idx > 0:
+                    self.prev_tok = self.tokens[self.tok_idx - 1]
 
         return self.current_tok
 
@@ -81,8 +80,12 @@ class Parser:
 
             statements.append(statement)
 
+            if self.prev_tok.type != exo_token.TT_NEWLINE:
+                return res.failure(
+                    InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected newline!'))
+
         res.register_advance()
-        self.advance(False)
+        self.advance()
         return res.success(statements)
 
     def parse_conditional_statement(self):
@@ -290,6 +293,14 @@ class Parser:
         res.register_advance()
         self.advance()
 
+        if self.current_tok.type != exo_token.TT_TYPE:
+            return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
+                                                  'Expected a type'))
+
+        var_type_tok = self.current_tok
+        res.register_advance()
+        self.advance()
+
         if self.current_tok.type != exo_token.TT_IDENTIFIER:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
                                                   'Expected an identifier'))
@@ -313,7 +324,7 @@ class Parser:
         if res.error:
             return res
 
-        return res.success(ForNode(var_name_tok, start, stop, step, statements))
+        return res.success(ForNode(var_type_tok, var_name_tok, start, stop, step, statements))
 
     def expr(self):
         res = ParseResult()
@@ -441,7 +452,7 @@ class Parser:
 
             if self.current_tok.type == exo_token.TT_RPAREN:
                 res.register_advance()
-                self.advance(False)
+                self.advance()
             else:
                 arg_nodes.append(res.register(self.val_expr()))
                 if res.error:
@@ -465,7 +476,7 @@ class Parser:
                     ))
 
                 res.register_advance()
-                self.advance(False)
+                self.advance()
             return res.success(FunctionCallNode(atom, arg_nodes))
         return res.success(atom)
 
@@ -497,7 +508,7 @@ class Parser:
 
         pos_end = self.current_tok.pos_end.copy()
         res.register_advance()
-        self.advance(False)
+        self.advance()
         return res.success(ListNode(pos_start, pos_end, elms))
 
     def unit(self):

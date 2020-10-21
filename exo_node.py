@@ -96,7 +96,8 @@ class WhileNode:
 
 
 class ForNode:
-    def __init__(self, var_name_tok, start, stop, step, body_nodes):
+    def __init__(self, var_type_tok, var_name_tok, start, stop, step, body_nodes):
+        self.var_type_tok = var_type_tok
         self.var_name_tok = var_name_tok
         self.start = start
         self.stop = stop

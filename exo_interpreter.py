@@ -206,7 +206,7 @@ class Interpreter:
 
     def visit_ForNode(self, node, context):
         res = RTResult()
-        init_assignment_node = VarAssignNode(node.var_name_tok, node.start)
+        init_assignment_node = VarAssignNode(node.var_type_tok, node.var_name_tok, node.start)
         step_val = res.register(self.visit(node.step, context)).value
         if res.error:
             return res
