@@ -28,20 +28,15 @@ class Parser:
         return statements
 
     def advance(self, ignore_newline=True):
-        if ignore_newline:
-            if not self.current_tok:
-                self.tok_idx += 1
-                if self.tok_idx < len(self.tokens):
-                    self.current_tok = self.tokens[self.tok_idx]
+        self.tok_idx += 1
+        if self.tok_idx < len(self.tokens):
+            self.current_tok = self.tokens[self.tok_idx]
 
-            while self.current_tok.type == exo_token.TT_NEWLINE and ignore_newline:
+        if ignore_newline:
+            while self.current_tok.type == exo_token.TT_NEWLINE:
                 self.tok_idx += 1
                 if self.tok_idx < len(self.tokens):
                     self.current_tok = self.tokens[self.tok_idx]
-        else:
-            self.tok_idx += 1
-            if self.tok_idx < len(self.tokens):
-                self.current_tok = self.tokens[self.tok_idx]
 
         return self.current_tok
 
@@ -446,7 +441,7 @@ class Parser:
 
             if self.current_tok.type == exo_token.TT_RPAREN:
                 res.register_advance()
-                self.advance()
+                self.advance(False)
             else:
                 arg_nodes.append(res.register(self.val_expr()))
                 if res.error:
@@ -470,7 +465,7 @@ class Parser:
                     ))
 
                 res.register_advance()
-                self.advance()
+                self.advance(False)
             return res.success(FunctionCallNode(atom, arg_nodes))
         return res.success(atom)
 
@@ -502,7 +497,7 @@ class Parser:
 
         pos_end = self.current_tok.pos_end.copy()
         res.register_advance()
-        self.advance()
+        self.advance(False)
         return res.success(ListNode(pos_start, pos_end, elms))
 
     def unit(self):
