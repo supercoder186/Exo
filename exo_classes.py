@@ -1,12 +1,19 @@
 from exo_context import Context
 from exo_errors import RTError
 
+TT_VAR = 'var'
+TT_INT = 'int'
+TT_FLOAT = 'float'
+TT_STRING = 'string'
+TT_FUNCTION = 'fun'
+
 
 class Value:
     def __init__(self):
         self.pos_start = None
         self.pos_end = None
         self.context = None
+        self.type = None
 
     def set_pos(self, pos_start=None, pos_end=None):
         self.pos_start = pos_start
@@ -90,6 +97,7 @@ class Number(Value):
     def __init__(self, value):
         super().__init__()
         self.value = value
+        self.type = TT_INT if isinstance(self.value, int) else TT_FLOAT
 
     def add_to(self, other):
         if isinstance(other, Number):
@@ -196,6 +204,7 @@ class String(Value):
     def __init__(self, value):
         super().__init__()
         self.value = value
+        self.type = TT_STRING
         self.pos_start = None
         self.pos_end = None
         self.context = None
@@ -245,6 +254,7 @@ class List(Value):
     def __init__(self, value):
         super().__init__()
         self.value = value
+        self.type = TT_LIST
         self.pos_start = None
         self.pos_end = None
         self.context = None
@@ -315,6 +325,7 @@ class BaseFunction(Value):
     def __init__(self, name):
         super().__init__()
         self.name = name or "<anonymous>"
+        self.type = TT_FUNCTION
 
     def generate_new_context(self):
         from exo_interpreter import SymbolTable

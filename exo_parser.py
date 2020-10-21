@@ -569,6 +569,9 @@ class ParseResult:
         self.node = None
         self.advance_count = 0
 
+    def __repr__(self):
+        return str(self.node)
+
     def register_advance(self):
         self.advance_count += 1
 

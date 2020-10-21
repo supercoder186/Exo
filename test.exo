@@ -1,5 +1,9 @@
 var s = ""
 
+fun a(){
+    return 0
+}
+
 for int i in (0, 6, 1){
     for int j in (0, i, 1){
         var s = s + i + " "
