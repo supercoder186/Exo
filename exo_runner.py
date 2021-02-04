@@ -5,6 +5,8 @@ from exo_interpreter import SymbolTable
 from exo_lexer import Lexer
 from exo_parser import Parser
 
+import re
+
 global_symbol_table = SymbolTable()
 global_symbol_table.set('null', Number(0))
 global_symbol_table.set('false', Number(0))
@@ -13,8 +15,13 @@ global_symbol_table.set("print", BuiltInFunction("print"))
 global_symbol_table.set("input", BuiltInFunction("input"))
 global_symbol_table.set("input_int", BuiltInFunction("input_int"))
 
+def filter_comments(text):
+    regexpr = r'[ ]*[#]+.*'
+    text = re.sub(regexpr, '', text)
+    return text
 
 def run(file_name, text):
+    text = filter_comments(text)
     lexer = Lexer(file_name, text)
     tokens, error = lexer.make_tokens()
     if error:

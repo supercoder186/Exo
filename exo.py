@@ -1,7 +1,7 @@
 import exo_runner
 
-# fn = input('Enter file name: ')
-fn = 'test.exo'
+fn = input('Enter file name: ')
+# fn = 'test.exo'
 
 with open('test.exo') as file:
     code = file.read()
