@@ -11,7 +11,7 @@ It does not have any dependencies. You can simply clone the repository
 ## Usage
 ### Running the Exo code
 
-Exo.py is the program that will run the pseudocode. Run the command 
+Exo.py is the program that will run the code. Run the command 
 ```shell
 python exo path/to/file.exo
 ```
@@ -30,6 +30,7 @@ There are four data types that the user can use: integer, double, string and fun
 - an Int and an Int will result in an Int
 - a Double and a Double results in a Double
 - a Double and an Int will result in a Double
+- any number type and a String will result in a string
 
 <a name="literals"></a>
 ### Literals
