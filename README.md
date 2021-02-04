@@ -20,7 +20,7 @@ python exo path/to/file.exo
 <a name="LanguageSpecification"></a>
 ## Language Specification
 
-There are no comments in this language
+Note: Comments start with a #, similar to python. There are no multiline comments
 
 <a name="types"></a>
 ### Data Types
@@ -43,8 +43,8 @@ Literals are values like ```5, "hello", 6.6```. A number is considered a double 
 Variables are dynamically typed (data types can be changed). There is type inference, so the data type is not specified.
 
 ```
-var x = 5 + 3.0 // 5 + 3.0 = 8.0 so x is a double
-string y = "Hello" + " World" // y is now a string
+var x = 5 + 3.0 # 5 + 3.0 = 8.0 so x is a double
+string y = "Hello" + " World" # y is now a string
 ```
 
 ```
@@ -66,7 +66,7 @@ If statements follow the following format:
 
 ```
 if (condition){
-  statements  //indents are optional
+  statements  #indents are optional
 } elif (condition){
   statements
 } else{
@@ -120,7 +120,7 @@ var y = [4, 5, 6]
 List elements can be accessed through the square bracket notation:
 
 ```
-var y = x[1] + 6  // x[1] gives the 2nd element of the list x
+var y = x[1] + 6  # x[1] gives the 2nd element of the list x
 ```
 
 They can be assigned to just like variables, and there are no type checks on the element added to the array:
@@ -150,8 +150,8 @@ print("Hello" + " " + "World")
 The input statement takes user input. There are 2 types: input, and input_int
 
 ```
-var x = input() //This will be stored as a string value
-var y = input_int() //This will be stored as an int value
+var x = input() #This will be stored as a string value
+var y = input_int() #This will be stored as an int value
 ```
 
 It can only take String and Int inputs.
