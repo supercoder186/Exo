@@ -1,9 +1,22 @@
 import exo_runner
 
-fn = input('Enter file name: ')
-# fn = 'test.exo'
+import sys
 
-with open('test.exo') as file:
+args = sys.argv
+len_args = len(args)
+
+fn = ''
+
+if len_args > 2:
+    print('Too many arguments were supplied!')
+    sys.argv[1]
+elif len_args < 2:
+    print('No filename argument provided, reverting to test.exo')
+    fn = 'test.exo'
+else:
+    fn = sys.argv[1]
+
+with open(fn) as file:
     code = file.read()
 
 value, error = exo_runner.run(fn, code)
