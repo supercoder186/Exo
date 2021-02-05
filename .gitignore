@@ -1,5 +1,3 @@
 venv/
 __pycache__/
-__pycache__/exo_classes.cpython-38.pyc
-__pycache__/exo_node.cpython-38.pyc
-__pycache__/exo_token.cpython-38.pyc
+__pycache__/*.pyc
