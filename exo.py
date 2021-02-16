@@ -5,7 +5,6 @@ import sys
 args = sys.argv
 len_args = len(args)
 
-fn = ''
 
 if len_args > 2:
     print('Too many arguments were supplied!')
