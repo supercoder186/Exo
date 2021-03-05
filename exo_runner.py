@@ -8,12 +8,12 @@ from exo_parser import Parser
 import re
 
 global_symbol_table = SymbolTable()
-global_symbol_table.set('null', Number(0))
-global_symbol_table.set('false', Number(0))
-global_symbol_table.set('true', Number(1))
-global_symbol_table.set("print", BuiltInFunction("print"))
-global_symbol_table.set("input", BuiltInFunction("input"))
-global_symbol_table.set("input_int", BuiltInFunction("input_int"))
+global_symbol_table.set('null', None, Number(0), None)
+global_symbol_table.set('false', None, Number(0), None)
+global_symbol_table.set('true', None, Number(1), None)
+global_symbol_table.set("print", None, BuiltInFunction("print"), None)
+global_symbol_table.set("input", None, BuiltInFunction("input"), None)
+global_symbol_table.set("input_int", None, BuiltInFunction("input_int"), None)
 
 def filter_comments(text):
     regexpr = r'[ ]*[#]+.*'

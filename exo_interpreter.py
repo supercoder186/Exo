@@ -1,7 +1,7 @@
 import exo_token
 from exo_classes import Number, String, List, Function
 from exo_errors import RTError
-from exo_node import VarAssignNode
+from exo_node import VarAssignNode, NumberNode, StringNode, BinOpNode, UnaryOpNode, VarAccessNode, IfNode, WhileNode, ForNode, ReturnNode, FunctionDefNode, FunctionCallNode
 
 
 class SymbolTable:
@@ -13,10 +13,32 @@ class SymbolTable:
         value = self.symbols.get(name, None)
         if value is None and self.parent:
             return self.parent.get(name)
-        return value
+        return value[1]
 
-    def set(self, name, value):
-        self.symbols[name] = value
+    def set(self, name, type_tok, value, context):
+        if type_tok:
+            type = type_tok.value
+        else:
+            type = None
+
+        # print(type)
+
+        if type == 'var':
+            type = None
+        
+        res = RTResult()
+        if name in self.symbols and type is not None:
+            var_type = self.symbols[name][0]
+            if type != var_type:
+                return res.failure(RTError(type_tok.pos_start, type_tok.pos_end, \
+                    f"Type mismatch! Referred to variable {name} of type {var_type} as {type}", context))
+
+        if type and value.type != type:
+            return res.failure(RTError(type_tok.pos_start, type_tok.pos_end, \
+                f"Type mismatch! Attempted to assign value of type {value.type} to var of type {type}", context))
+        
+        self.symbols[name] = (type, value)
+        return res.success(None)
 
     def remove(self, name):
         del self.symbols[name]
@@ -138,7 +160,7 @@ class Interpreter:
             value = value.set_pos(node.pos_start, node.pos_end)
         return res.success(value)
 
-    def visit_VarAssignNode(self, node, context):
+    def visit_VarAssignNode(self, node: VarAssignNode, context):
         res = RTResult()
         var_name = node.var_name_tok.value
         value = res.register(self.visit(node.value_node, context))
@@ -158,19 +180,25 @@ class Interpreter:
             if res.error:
                 return res
 
-            context.symbol_table.set(var_name, updated_list_val)
+            res.register(context.symbol_table.set(var_name, node.type_tok, updated_list_val, context))
+            if res.error:
+                return res
+            
             return res.success(updated_list_val)
         else:
             if res.error:
                 return res
 
-            context.symbol_table.set(var_name, value)
+            res.register(context.symbol_table.set(var_name, node.type_tok, value, context))
+            if res.error:
+                return res
+            
             return res.success(value)
 
     def visit_IfNode(self, node, context):
         res = RTResult()
         for condition, statements in node.cases:
-            condition_value = res.register(self.visit(condition, context))
+            condition_value = res.register(self.visit(condition))
             if res.error:
                 return res
 
@@ -204,7 +232,7 @@ class Interpreter:
 
         return res.success(None)
 
-    def visit_ForNode(self, node, context):
+    def visit_ForNode(self, node: ForNode, context):
         res = RTResult()
         init_assignment_node = VarAssignNode(node.var_type_tok, node.var_name_tok, node.start)
         step_val = res.register(self.visit(node.step, context)).value
@@ -226,7 +254,9 @@ class Interpreter:
                 if res.error:
                     return res
 
-            context.symbol_table.set(node.var_name_tok.value, Number(var_val() + step_val))
+            res.register(context.symbol_table.set(node.var_name_tok.value, var_type_tok, Number(var_val() + step_val), context))
+            if res.error:
+                return res
 
         return res.success(None)
 
@@ -234,7 +264,7 @@ class Interpreter:
         return self.visit(node.value_node, context)
 
     @staticmethod
-    def visit_FunctionDefNode(node, context):
+    def visit_FunctionDefNode(node: FunctionDefNode, context):
         res = RTResult()
         name = node.fun_name_tok.value
         body_nodes = node.body_nodes
@@ -243,7 +273,7 @@ class Interpreter:
         function_var = Function(name, body_nodes, arg_names, return_node).set_context(context) \
             .set_pos(node.pos_start, node.pos_end)
 
-        context.symbol_table.set(name, function_var)
+        context.symbol_table.set(name, None, function_var, None)
         return res.success(function_var)
 
     def visit_FunctionCallNode(self, node, context):

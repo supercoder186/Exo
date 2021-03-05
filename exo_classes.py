@@ -359,7 +359,7 @@ class BaseFunction(Value):
             arg_name = arg_names[i]
             arg_value = args[i]
             arg_value.set_context(exec_ctx)
-            exec_ctx.symbol_table.set(arg_name, arg_value)
+            exec_ctx.symbol_table.set(arg_name, None, arg_value, None)
 
     def check_and_populate_args(self, arg_names, args, exec_ctx):
         from exo_interpreter import RTResult
