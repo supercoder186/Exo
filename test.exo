@@ -1,4 +1,7 @@
 var s = ""
+string b = "Hello there"
+int b = "Hello there"
+
 # Ok gamer ok gamer ok gamer
 fun a(){
     return 0
