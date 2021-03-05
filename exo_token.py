@@ -1,8 +1,8 @@
 import string
 
-TT_INT = 'INT'
-TT_FLOAT = 'FLOAT'
-TT_STRING = 'STRING'
+TT_INT = 'int'
+TT_FLOAT = 'float'
+TT_STRING = 'string'
 TT_FUNCTION = 'FUNCTION'
 TT_LIST = 'LIST'
 TT_PLUS = 'PLUS'        # +
