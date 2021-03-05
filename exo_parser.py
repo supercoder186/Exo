@@ -26,9 +26,13 @@ class Parser:
         return statements
 
     def advance(self):
+        res = ParseResult()
         self.tok_idx += 1
         if self.tok_idx < len(self.tokens):
             self.current_tok = self.tokens[self.tok_idx]
+
+        if isinstance(self.current_tok, tuple):
+            return res.failure(self.current_tok[1])
 
         while self.current_tok.type == exo_token.TT_NEWLINE:
             self.tok_idx += 1
@@ -37,7 +41,7 @@ class Parser:
                 if self.tok_idx > 0:
                     self.prev_tok = self.tokens[self.tok_idx - 1]
 
-        return self.current_tok
+        return res.success(self.current_tok)
 
     def bin_op(self, func_a, ops, func_b=None):
         if func_b is None:
@@ -52,7 +56,10 @@ class Parser:
         while self.current_tok.type in ops or (self.current_tok.type, self.current_tok.value) in ops:
             op_tok = self.current_tok
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
+            
             right = res.register(func_b())
             if res.error:
                 return res
@@ -63,14 +70,18 @@ class Parser:
     def parse_braces(self):
         res = ParseResult()
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
 
         if self.current_tok.type != exo_token.TT_LCPAREN:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
                                                   "Expected '{'"))
 
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
 
         statements = []
         while self.current_tok.type != exo_token.TT_RCPAREN:
@@ -85,20 +96,28 @@ class Parser:
                     InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected newline!'))
 
         res.register_advance()
-        self.advance()
+        
+        res.register(self.advance())
+        if res.error:
+            return res
+        
         return res.success(statements)
 
     def parse_conditional_statement(self):
         res = ParseResult()
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
 
         if self.current_tok.type != exo_token.TT_LPAREN:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
                                                   "Expected '('"))
 
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
         condition = res.register(self.val_expr())
         if res.error:
             return res
@@ -116,8 +135,10 @@ class Parser:
     def parse_args(self):
         res = ParseResult()
         res.register_advance()
-        self.advance()
-
+        res.register(self.advance())
+        if res.error:
+            return res
+        
         arg_toks = []
 
         while self.current_tok.type != exo_token.TT_RPAREN:
@@ -125,7 +146,9 @@ class Parser:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end, 'Expected variable type!'))
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
             if self.current_tok.type != exo_token.TT_IDENTIFIER:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end, 'Expected variable identifier!'))
@@ -133,14 +156,18 @@ class Parser:
             arg_toks.append(self.current_tok)
 
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
 
             if self.current_tok.type not in (exo_token.TT_COMMA, exo_token.TT_RPAREN):
                 return res.failure(
                     InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected ','"))
             if self.current_tok.type == exo_token.TT_COMMA:
                 res.register_advance()
-                self.advance()
+                res.register(self.advance())
+                if res.error:
+                    return res
 
         return res.success(arg_toks)
 
@@ -149,7 +176,9 @@ class Parser:
         arguments = []
 
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
 
         if self.current_tok.type != exo_token.TT_LPAREN:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
@@ -157,7 +186,9 @@ class Parser:
 
         for i in range(3):
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
 
             num = res.register(self.arith_expr())
             if res.error:
@@ -215,10 +246,14 @@ class Parser:
     def function_def(self):
         res = ParseResult()
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
         if self.current_tok.type == exo_token.TT_TYPE:
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
 
         if self.current_tok.type != exo_token.TT_IDENTIFIER:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
@@ -226,7 +261,9 @@ class Parser:
 
         fun_name_tok = self.current_tok
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
 
         if self.current_tok.type != exo_token.TT_LPAREN:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
@@ -291,7 +328,9 @@ class Parser:
     def for_expr(self):
         res = ParseResult()
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
 
         if self.current_tok.type != exo_token.TT_TYPE:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
@@ -299,7 +338,9 @@ class Parser:
 
         var_type_tok = self.current_tok
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
 
         if self.current_tok.type != exo_token.TT_IDENTIFIER:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
@@ -308,7 +349,9 @@ class Parser:
         var_name_tok = self.current_tok
 
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
 
         if not self.current_tok.matches(exo_token.TT_KEYWORD, 'in'):
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
@@ -332,7 +375,9 @@ class Parser:
             return self.var_assignment()
         elif self.current_tok.matches(exo_token.TT_KEYWORD, 'return'):
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
             num_res = res.register(self.val_expr())
             if res.error:
                 return res
@@ -345,7 +390,10 @@ class Parser:
         type_tok = self.current_tok
 
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
+        
         if self.current_tok.type != exo_token.TT_IDENTIFIER:
             return res.failure(
                 InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected an identifier'))
@@ -353,12 +401,17 @@ class Parser:
         var_name = self.current_tok
 
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
 
         index_node = None
         if self.current_tok.type == exo_token.TT_LSQUARE:
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
+            
             index_node = res.register(self.val_expr())
             if res.error:
                 return res
@@ -367,14 +420,18 @@ class Parser:
                 return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
                                                       "Expected ']'"))
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
 
         if self.current_tok.type != exo_token.TT_EQ:
             return res.failure(
                 InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected ='))
 
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
         expr = res.register(self.val_expr())
         if res.error:
             return res
@@ -401,7 +458,10 @@ class Parser:
         if self.current_tok.matches(exo_token.TT_KEYWORD, 'not'):
             op_tok = self.current_tok
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
+            
             node = res.register(self.comp_expr())
             if res.error:
                 return res
@@ -427,7 +487,10 @@ class Parser:
 
         if tok.type in (exo_token.TT_PLUS, exo_token.TT_MINUS):
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
+
             factor = res.register(self.factor())
             if res.error:
                 return res
@@ -447,12 +510,18 @@ class Parser:
 
         if self.current_tok.type == exo_token.TT_LPAREN:
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
+
             arg_nodes = []
 
             if self.current_tok.type == exo_token.TT_RPAREN:
                 res.register_advance()
-                self.advance()
+                res.register(self.advance())
+                if res.error:
+                    return res
+
             else:
                 arg_nodes.append(res.register(self.val_expr()))
                 if res.error:
@@ -463,7 +532,9 @@ class Parser:
 
                 while self.current_tok.type == exo_token.TT_COMMA:
                     res.register_advance()
-                    self.advance()
+                    res.register(self.advance())
+                    if res.error:
+                        return res
 
                     arg_nodes.append(res.register(self.val_expr()))
                     if res.error:
@@ -476,7 +547,10 @@ class Parser:
                     ))
 
                 res.register_advance()
-                self.advance()
+                res.register(self.advance())
+                if res.error:
+                    return res
+
             return res.success(FunctionCallNode(atom, arg_nodes))
         return res.success(atom)
 
@@ -490,7 +564,10 @@ class Parser:
         res = ParseResult()
         pos_start = self.current_tok.pos_start.copy()
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
+
         elms = []
         while self.current_tok.type != exo_token.TT_RSQUARE:
             elem = res.register(self.val_expr())
@@ -504,11 +581,16 @@ class Parser:
             elms.append(elem)
             if self.current_tok.type == exo_token.TT_COMMA:
                 res.register_advance()
-                self.advance()
+                res.register(self.advance())
+                if res.error:
+                    return res
 
         pos_end = self.current_tok.pos_end.copy()
         res.register_advance()
-        self.advance()
+        res.register(self.advance())
+        if res.error:
+            return res
+        
         return res.success(ListNode(pos_start, pos_end, elms))
 
     def unit(self):
@@ -516,19 +598,30 @@ class Parser:
         tok = self.current_tok
         if tok.type in (exo_token.TT_INT, exo_token.TT_FLOAT):
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
+
             return res.success(NumberNode(tok))
         elif tok.type == exo_token.TT_STRING:
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
+
             return res.success(StringNode(tok))
         elif tok.type == exo_token.TT_IDENTIFIER:
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
+
             index_node = None
             if self.current_tok.type == exo_token.TT_LSQUARE:
                 res.register_advance()
-                self.advance()
+                res.register(self.advance())
+                if res.error:
+                    return res
                 index_node = res.register(self.val_expr())
                 if res.error:
                     return res
@@ -538,7 +631,9 @@ class Parser:
                                                           "Expected ']'"))
 
                 res.register_advance()
-                self.advance()
+                res.register(self.advance())
+                if res.error:
+                    return res
 
             if index_node:
                 return res.success(VarAccessNode(tok, index_node))
@@ -547,14 +642,20 @@ class Parser:
 
         elif tok.type == exo_token.TT_LPAREN:
             res.register_advance()
-            self.advance()
+            res.register(self.advance())
+            if res.error:
+                return res
+
             expr = res.register(self.expr())
             if res.error:
                 return res
 
             if self.current_tok.type == exo_token.TT_RPAREN:
                 res.register_advance()
-                self.advance()
+                res.register(self.advance())
+                if res.error:
+                    return res
+                
                 return res.success(expr)
             else:
                 return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
