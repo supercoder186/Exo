@@ -23,7 +23,10 @@ class Lexer:
             elif self.current_char in DIGITS:
                 tokens.append(self.make_number())
             elif self.current_char in '"':
-                tokens.append(self.make_string())
+                token, error = self.make_string()
+                if error:
+                    return [], error
+                tokens.append(token)
             elif self.current_char in LETTERS:
                 tokens.append(self.make_identifier())
             elif self.current_char == '+':
@@ -123,7 +126,7 @@ class Lexer:
             self.advance()
 
         self.advance()
-        return Token(exo_token.TT_STRING, val_str, pos_start, self.pos.copy())
+        return Token(exo_token.TT_STRING, val_str, pos_start, self.pos.copy()), None
 
     def make_identifier(self):
         id_str = ''
