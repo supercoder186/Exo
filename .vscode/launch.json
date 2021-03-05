@@ -10,6 +10,13 @@
             "request": "launch",
             "program": "exo.py",
             "console": "integratedTerminal"
+        }, 
+        {
+            "name": "Exo-Shell",
+            "type": "python",
+            "request": "launch",
+            "program": "exo_shell.py",
+            "console": "integratedTerminal"            
         }
     ]
 }
