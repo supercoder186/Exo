@@ -13,7 +13,10 @@ class SymbolTable:
         value = self.symbols.get(name, None)
         if value is None and self.parent:
             return self.parent.get(name)
-        return value[1]
+        if value:
+            return value[1]
+        else:
+            return Number(0)
 
     def set(self, name, type_tok, value, context):
         if type_tok:
