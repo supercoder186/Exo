@@ -1,5 +1,5 @@
 # Exo-Python
-The is a programming language aimed to be simple and fast, written in python. While types can be used for variables, I recommend using the word 'var', because type checks aren't implemented, and probably will never be implemented. Apart from that, let's get into the syntax of the language....
+The is a programming language aimed to be simple and fast, written in python
 
 <a name="Installation"></a>
 ## Installation
@@ -40,11 +40,14 @@ Literals are values like ```5, "hello", 6.6```. A number is considered a double 
 <a name="variables"></a>
 ### Variables
 
-Variables are dynamically typed (data types can be changed). There is type inference, so the data type is not specified.
+Variables are dynamically typed (data types can be changed). There is type inference, but you can explicitly state the type of the variable if you want the type to be explicit
 
 ```
 var x = 5 + 3.0 # 5 + 3.0 = 8.0 so x is a double
 string y = "Hello" + " World" # y is now a string
+var y = "Hi" # y is now 'Hi'
+int y = 1 # This will throw an error
+var y = 1 # This will also throw an error
 ```
 
 ```
@@ -190,7 +193,7 @@ If there is no return statement, the function will return 0
 This is the syntax to call a function:
 
 ```
-z = function(arg, arg2, ...)
+var z = function(arg, arg2, ...)
 ```
 
 The function call can be used just like a normal variable. For example:
