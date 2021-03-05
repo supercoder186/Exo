@@ -28,16 +28,6 @@ class SymbolTable:
         res = RTResult()
         if name in self.symbols:
             var_type = self.symbols[name][0]
-        """
-        if name in self.symbols and type is not None:
-            var_type = self.symbols[name][0]
-            if type != var_type and var_type is not None:
-                return res.failure(RTError(type_tok.pos_start, type_tok.pos_end, \
-                    f"Type mismatch! Referred to variable {name} of type {var_type} as {type}", context))
-
-        if (type and value.type != type) or (var_type and value.type != var_type):
-            return res.failure(RTError(type_tok.pos_start, type_tok.pos_end, \
-                f"Type mismatch! Attempted to assign value of type {value.type} to var of type {type}", context))"""
         
         if name in self.symbols and type:
             if type != var_type and var_type:
