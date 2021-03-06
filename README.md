@@ -1,5 +1,5 @@
 # Exo-Python
-The is a programming language aimed to be simple and fast, written in python
+The is a programming language designed to be simple and fast, written in python
 
 <a name="Installation"></a>
 ## Installation
