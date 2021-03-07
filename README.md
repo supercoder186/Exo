@@ -25,17 +25,17 @@ Note: Comments start with a #, similar to python. There are no multiline comment
 <a name="types"></a>
 ### Data Types
 
-There are four data types that the user can use: integer, double, string and function. In general, the following is true for operations:
+There are four data types that the user can use: integer, float, string and function. In general, the following is true for operations:
 
 - an Int and an Int will result in an Int
-- a Double and a Double results in a Double
-- a Double and an Int will result in a Double
+- a Float and a Float results in a Float
+- a Float and an Int will result in a Float
 - any number type and a String will result in a string
 
 <a name="literals"></a>
 ### Literals
 
-Literals are values like ```5, "hello", 6.6```. A number is considered a double if it has a decimal point; otherwise it is taken as an int. String literals are surrounded in quotation marks.
+Literals are values like ```5, "hello", 6.6```. A number is considered a float if it has a decimal point; otherwise it is taken as an int. String literals are surrounded in quotation marks.
 
 <a name="variables"></a>
 ### Variables
@@ -43,7 +43,7 @@ Literals are values like ```5, "hello", 6.6```. A number is considered a double 
 Variables are dynamically typed (data types can be changed). There is type inference, but you can explicitly state the type of the variable if you want the type to be explicit
 
 ```
-var x = 5 + 3.0 # 5 + 3.0 = 8.0 so x is a double
+var x = 5 + 3.0 # 5 + 3.0 = 8.0 so x is a float
 string y = "Hello" + " World" # y is now a string
 var y = "Hi" # y is now 'Hi'
 int y = 1 # This will throw an error
