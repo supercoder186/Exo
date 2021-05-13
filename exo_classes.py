@@ -6,6 +6,7 @@ TT_INT = 'int'
 TT_FLOAT = 'float'
 TT_STRING = 'string'
 TT_FUNCTION = 'fun'
+TT_LIST = 'list'
 
 
 class Value:

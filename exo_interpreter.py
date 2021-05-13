@@ -267,7 +267,7 @@ class Interpreter:
                 if res.error:
                     return res
 
-            res.register(context.symbol_table.set(node.var_name_tok.value, var_type_tok, Number(var_val() + step_val), context))
+            res.register(context.symbol_table.set(node.var_name_tok.value, node.var_type_tok, Number(var_val() + step_val), context))
             if res.error:
                 return res
 
