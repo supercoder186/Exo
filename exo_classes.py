@@ -373,9 +373,10 @@ class BaseFunction(Value):
 
 
 class Function(BaseFunction):
-    def __init__(self, name, body_nodes, arg_names, return_node):
+    def __init__(self, name, type, body_nodes, arg_names, return_node):
         super().__init__(name)
         self.name = name or "<anonymous>"
+        self.type = type
         self.body_nodes = body_nodes
         self.return_node = return_node
         self.arg_names = arg_names
@@ -385,6 +386,7 @@ class Function(BaseFunction):
         res = RTResult()
         interpreter = Interpreter()
         exec_ctx = self.generate_new_context()
+        exec_ctx.display_name = self.name
         res.register(self.check_and_populate_args(self.arg_names, args, exec_ctx))
         if res.error:
             return res
@@ -400,12 +402,16 @@ class Function(BaseFunction):
             if res.error:
                 return res
 
-            return res.success(value)
-
+        if self.type and self.type != value.type:
+            return res.failure(RTError(self.return_node.pos_start, self.return_node.pos_end,\
+                f'Expected type of {self.type} but recieved value of type {value.type}', exec_ctx))
+        
         return res.success(value)
 
+                
+
     def copy(self):
-        copy = Function(self.name, self.body_nodes, self.arg_names, self.return_node)
+        copy = Function(self.name, self.type, self.body_nodes, self.arg_names, self.return_node)
         copy.set_context(self.context)
         copy.set_pos(self.pos_start, self.pos_end)
         return copy

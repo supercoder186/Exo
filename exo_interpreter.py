@@ -280,10 +280,11 @@ class Interpreter:
     def visit_FunctionDefNode(node: FunctionDefNode, context):
         res = RTResult()
         name = node.fun_name_tok.value
+        type = node.type_tok.value if node.type_tok else None
         body_nodes = node.body_nodes
         return_node = node.return_node
         arg_names = [arg_name.value for arg_name in node.arg_name_toks]
-        function_var = Function(name, body_nodes, arg_names, return_node).set_context(context) \
+        function_var = Function(name, type, body_nodes, arg_names, return_node).set_context(context) \
             .set_pos(node.pos_start, node.pos_end)
 
         context.symbol_table.set(name, None, function_var, None)
@@ -307,6 +308,7 @@ class Interpreter:
         return_value = res.register(value_to_call.execute(args))
         if res.error:
             return res
+        
         return res.success(return_value)
 
 

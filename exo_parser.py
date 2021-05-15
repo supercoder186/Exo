@@ -216,7 +216,10 @@ class Parser:
         res = ParseResult()
         res.register_advance()
         self.advance()
+
+        type_tok = None
         if self.current_tok.type == exo_token.TT_TYPE:
+            type_tok = self.current_tok
             res.register_advance()
             self.advance()
 
@@ -253,7 +256,7 @@ class Parser:
             return_node = NumberNode(
                 exo_token.Token(exo_token.TT_INT, 0, statements[-1].pos_end, statements[-1].pos_end))
 
-        return res.success(FunctionDefNode(fun_name_tok, arg_toks, statements, return_node))
+        return res.success(FunctionDefNode(fun_name_tok, type_tok, arg_toks, statements, return_node))
 
     def if_expr(self):
         res = ParseResult()

@@ -44,7 +44,7 @@ class RTError(Error):
         pos = self.pos_start
         context = self.context
 
-        while context:
+        while context and pos:
             result = f'File {pos.file_name}, line {str(pos.ln + 1)}, in {context.display_name}\n'
             pos = context.parent_entry
             context = context.parent

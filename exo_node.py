@@ -109,8 +109,9 @@ class ForNode:
 
 
 class FunctionDefNode:
-    def __init__(self, fun_name_tok, arg_name_toks, body_nodes, return_node):
+    def __init__(self, fun_name_tok, type_tok, arg_name_toks, body_nodes, return_node):
         self.fun_name_tok = fun_name_tok
+        self.type_tok = type_tok
         self.arg_name_toks = arg_name_toks
         self.body_nodes = body_nodes
         self.return_node = return_node
