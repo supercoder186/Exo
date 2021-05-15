@@ -40,7 +40,7 @@ Literals are values like ```5, "hello", 6.6```. A number is considered a float i
 <a name="variables"></a>
 ### Variables
 
-Variables are dynamically typed (data types can be changed). There is type inference, but you can explicitly state the type of the variable if you want the type to be explicit
+Variables are dynamically typed (data types can be changed). There is type inference, but you can explicitly state the type of the variable if you want the type to be explicit. Once you set the type explicitly, it cannot be changed.
 
 ```
 var x = 5 + 3.0 # 5 + 3.0 = 8.0 so x is a float
