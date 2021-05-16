@@ -280,7 +280,7 @@ class Interpreter:
     def visit_FunctionDefNode(node: FunctionDefNode, context):
         res = RTResult()
         name = node.fun_name_tok.value
-        type = node.type_tok.value if node.type_tok else None
+        type = node.type_tok.value if node.type_tok and node.type_tok.value != 'var' else None
         body_nodes = node.body_nodes
         return_node = node.return_node
         arg_names = [arg_name.value for arg_name in node.arg_name_toks]
