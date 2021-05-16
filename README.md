@@ -165,13 +165,14 @@ It can only take String and Int inputs.
 Functions are defined like so:
 
 ```
-fun name(type arg1, type arg2){
+fun (type) name(type arg1, type arg2){
   statements
   (return statement)
 }
 ```
 
-Arguments require types, but they are not type-checked
+Providing a type to the function is optional. If no type is provided, no type checks are performed on the return value
+Providing a type to the argument is mandatory. If you do not wish to perform type checks, you can use the type 'var'
 
 ```
 fun double(int a){
@@ -179,7 +180,7 @@ fun double(int a){
   return b
 }
 
-fun triple(int a){
+fun int triple(int a){
   return a * 3
 }
 
@@ -187,6 +188,25 @@ fun concat_print(string a1, string a2){
   var a3 = a1 + " " + a2
   print(a3)
 }
+
+fun float double_2(int a){
+  int b = a * 2
+  return b
+} # This will throw an error, since the output is always an int
+
+fun triple_2(int a){
+  return a * 3
+}
+
+triple_2(1.0) # This will throw an error, since a is supposed to be of type int
+
+fun concat(string a1, var a2){
+  return a1 + " " + a2
+}
+
+concat("Hello", "World") # This will run fine
+concat("Hello", 1) # This will also run fine
+concat(1, 1) # This will throw an error, since a1 is supposed to be of type string
 ```
 If there is no return statement, the function will return 0
 
