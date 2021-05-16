@@ -334,7 +334,7 @@ class BaseFunction(Value):
         new_context.symbol_table = SymbolTable(new_context.parent.symbol_table)
         return new_context
 
-    def check_args(self, arg_names, args):
+    def check_args(self, arg_types, arg_names, args):
         from exo_interpreter import RTResult
         res = RTResult()
 
@@ -352,6 +352,14 @@ class BaseFunction(Value):
                 self.context
             ))
 
+        for i in range(len(args)):
+            if arg_types[i] != 'var' and arg_types[i] != args[i].type:
+                return res.failure(RTError(
+                    self.pos_start, self.pos_end, 
+                    f"Expected argument of type {arg_types[i]} but recieved {args[i].type}",
+                    self.context
+                ))
+
         return res.success(None)
 
     @staticmethod
@@ -362,10 +370,10 @@ class BaseFunction(Value):
             arg_value.set_context(exec_ctx)
             exec_ctx.symbol_table.set(arg_name, None, arg_value, None)
 
-    def check_and_populate_args(self, arg_names, args, exec_ctx):
+    def check_and_populate_args(self, arg_types, arg_names, args, exec_ctx):
         from exo_interpreter import RTResult
         res = RTResult()
-        res.register(self.check_args(arg_names, args))
+        res.register(self.check_args(arg_types, arg_names, args))
         if res.error:
             return res
         self.populate_args(arg_names, args, exec_ctx)
@@ -373,12 +381,13 @@ class BaseFunction(Value):
 
 
 class Function(BaseFunction):
-    def __init__(self, name, type, body_nodes, arg_names, return_node):
+    def __init__(self, name, type, body_nodes, arg_types, arg_names, return_node):
         super().__init__(name)
         self.name = name or "<anonymous>"
         self.type = type
         self.body_nodes = body_nodes
         self.return_node = return_node
+        self.arg_types = arg_types
         self.arg_names = arg_names
 
     def execute(self, args):
@@ -387,7 +396,7 @@ class Function(BaseFunction):
         interpreter = Interpreter()
         exec_ctx = self.generate_new_context()
         exec_ctx.display_name = self.name
-        res.register(self.check_and_populate_args(self.arg_names, args, exec_ctx))
+        res.register(self.check_and_populate_args(self.arg_types, self.arg_names, args, exec_ctx))
         if res.error:
             return res
 
@@ -403,15 +412,14 @@ class Function(BaseFunction):
                 return res
 
         if self.type and self.type != value.type:
-            return res.failure(RTError(self.return_node.pos_start, self.return_node.pos_end,\
+            return res.failure(RTError(self.pos_start, self.pos_end,\
                 f'Expected type of {self.type} but recieved value of type {value.type}', exec_ctx))
         
         return res.success(value)
 
-                
 
     def copy(self):
-        copy = Function(self.name, self.type, self.body_nodes, self.arg_names, self.return_node)
+        copy = Function(self.name, self.type, self.body_nodes, self.arg_types, self.arg_names, self.return_node)
         copy.set_context(self.context)
         copy.set_pos(self.pos_start, self.pos_end)
         return copy
@@ -432,7 +440,9 @@ class BuiltInFunction(BaseFunction):
         method_name = f'execute_{self.name}'
         method = getattr(self, method_name, self.no_visit_method)
 
-        res.register(self.check_and_populate_args(method.arg_names, args, exec_ctx))
+        arg_types = ['var'] * len(method.arg_names)
+
+        res.register(self.check_and_populate_args(arg_types, method.arg_names, args, exec_ctx))
         if res.error:
             return res
 

@@ -284,7 +284,8 @@ class Interpreter:
         body_nodes = node.body_nodes
         return_node = node.return_node
         arg_names = [arg_name.value for arg_name in node.arg_name_toks]
-        function_var = Function(name, type, body_nodes, arg_names, return_node).set_context(context) \
+        arg_types = [arg_type.value for arg_type in node.arg_type_toks]
+        function_var = Function(name, type, body_nodes, arg_types, arg_names, return_node).set_context(context) \
             .set_pos(node.pos_start, node.pos_end)
 
         context.symbol_table.set(name, None, function_var, None)

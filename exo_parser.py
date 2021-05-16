@@ -117,15 +117,20 @@ class Parser:
         res = ParseResult()
         res.register_advance()
         self.advance()
-
+        
+        type_toks = []
         arg_toks = []
 
         while self.current_tok.type != exo_token.TT_RPAREN:
             if self.current_tok.type != exo_token.TT_TYPE:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end, 'Expected variable type!'))
+
+            type_toks.append(self.current_tok)
+
             res.register_advance()
             self.advance()
+
             if self.current_tok.type != exo_token.TT_IDENTIFIER:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end, 'Expected variable identifier!'))
@@ -142,7 +147,7 @@ class Parser:
                 res.register_advance()
                 self.advance()
 
-        return res.success(arg_toks)
+        return res.success((type_toks, arg_toks))
 
     def parse_for_args(self):
         res = ParseResult()
@@ -235,7 +240,7 @@ class Parser:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
                                                   "Expected an '('"))
 
-        arg_toks = res.register(self.parse_args())
+        arg_type_toks, arg_name_toks = res.register(self.parse_args())
         if res.error:
             return res
 
@@ -256,7 +261,7 @@ class Parser:
             return_node = NumberNode(
                 exo_token.Token(exo_token.TT_INT, 0, statements[-1].pos_end, statements[-1].pos_end))
 
-        return res.success(FunctionDefNode(fun_name_tok, type_tok, arg_toks, statements, return_node))
+        return res.success(FunctionDefNode(fun_name_tok, type_tok, arg_type_toks, arg_name_toks, statements, return_node))
 
     def if_expr(self):
         res = ParseResult()
