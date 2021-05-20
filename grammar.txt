@@ -11,7 +11,7 @@ if-expr     : KEYWORD:if LPAREN val-expr RPAREN LCPAREN (statement)* RCPAREN
 
 while-expr  : KEYWORD:while LPAREN val-expr RPAREN LCPAREN (statement)* RCPAREN
 
-for-expr    : KEYWORD:for IDENTIFIER KEYWORD:in LPAREN arith-expr COMMA arith-expr COMMA arith-expr RPAREN LCPAREN (statement)* RCPAREN
+for-expr    : KEYWORD:for TYPE IDENTIFIER KEYWORD:in LPAREN arith-expr COMMA arith-expr COMMA arith-expr RPAREN LCPAREN (statement)* RCPAREN
 
 function-def: KEYWORD:fun TYPE? IDENTIFIER LPAREN (TYPE IDENTIFIER)? (COMMA TYPE IDENTIFIER)* RPAREN LCPAREN (statement)* (KEYWORD:return val-expr)? RCPAREN
 

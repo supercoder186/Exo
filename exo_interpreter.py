@@ -1,7 +1,7 @@
 import exo_token
 from exo_classes import Number, String, List, Function
 from exo_errors import RTError
-from exo_node import VarAssignNode, NumberNode, StringNode, BinOpNode, UnaryOpNode, VarAccessNode, IfNode, WhileNode, ForNode, ReturnNode, FunctionDefNode, FunctionCallNode
+from exo_node import VarAssignNode, ForNode, FunctionDefNode
 
 
 class SymbolTable:
