@@ -1,5 +1,5 @@
-from exo_context import Context
-from exo_errors import RTError
+from exo_classes.exo_context import Context
+from exo_errors.exo_errors import RTError
 
 TT_VAR = 'var'
 TT_INT = 'int'
@@ -68,7 +68,7 @@ class Value:
         return None, self.illegal_operation()
 
     def execute(self, args):
-        from exo_interpreter import RTResult
+        from exo_lang.exo_interpreter import RTResult
         return RTResult().failure(self.illegal_operation())
 
     def get_index(self, index):
@@ -301,7 +301,7 @@ class List(Value):
         return self.value[index.value].set_context(self.context), None
 
     def set_index(self, index, value):
-        from exo_interpreter import RTResult
+        from exo_lang.exo_interpreter import RTResult
         res = RTResult()
         pos_start = index.pos_start
         pos_end = index.pos_end
@@ -329,13 +329,13 @@ class BaseFunction(Value):
         self.type = TT_FUNCTION
 
     def generate_new_context(self):
-        from exo_interpreter import SymbolTable
+        from exo_lang.exo_interpreter import SymbolTable
         new_context = Context(self.name, self.context, self.pos_start)
         new_context.symbol_table = SymbolTable(new_context.parent.symbol_table)
         return new_context
 
     def check_args(self, arg_types, arg_names, args):
-        from exo_interpreter import RTResult
+        from exo_lang.exo_interpreter import RTResult
         res = RTResult()
 
         if len(args) > len(arg_names):
@@ -371,7 +371,7 @@ class BaseFunction(Value):
             exec_ctx.symbol_table.set(arg_name, None, arg_value, None)
 
     def check_and_populate_args(self, arg_types, arg_names, args, exec_ctx):
-        from exo_interpreter import RTResult
+        from exo_lang.exo_interpreter import RTResult
         res = RTResult()
         res.register(self.check_args(arg_types, arg_names, args))
         if res.error:
@@ -391,7 +391,7 @@ class Function(BaseFunction):
         self.arg_names = arg_names
 
     def execute(self, args):
-        from exo_interpreter import Interpreter, RTResult
+        from exo_lang.exo_interpreter import Interpreter, RTResult
         res = RTResult()
         interpreter = Interpreter()
         exec_ctx = self.generate_new_context()
@@ -433,7 +433,7 @@ class BuiltInFunction(BaseFunction):
         super().__init__(name)
 
     def execute(self, args):
-        from exo_interpreter import RTResult
+        from exo_lang.exo_interpreter import RTResult
         res = RTResult()
         exec_ctx = self.generate_new_context()
 
@@ -464,7 +464,7 @@ class BuiltInFunction(BaseFunction):
         return f"<built-in function {self.name}>"
 
     def execute_print(self, exec_ctx):
-        from exo_interpreter import RTResult
+        from exo_lang.exo_interpreter import RTResult
         print(str(exec_ctx.symbol_table.get('value')))
         return RTResult().success(Number(0))
 
@@ -472,7 +472,7 @@ class BuiltInFunction(BaseFunction):
 
     # noinspection PyUnusedLocal
     def execute_input(self, exec_ctx):
-        from exo_interpreter import RTResult
+        from exo_lang.exo_interpreter import RTResult
         text = input()
         return RTResult().success(String(text))
 
@@ -480,7 +480,7 @@ class BuiltInFunction(BaseFunction):
 
     # noinspection PyUnusedLocal
     def execute_input_int(self, exec_ctx):
-        from exo_interpreter import RTResult
+        from exo_lang.exo_interpreter import RTResult
         while True:
             text = input()
             try:

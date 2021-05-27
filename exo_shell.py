@@ -1,4 +1,4 @@
-import exo_runner
+import exo_lang.exo_runner as exo_runner
 
 while True:
     text = input('Exo >>> ')

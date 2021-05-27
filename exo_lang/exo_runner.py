@@ -1,11 +1,10 @@
-from exo_classes import Number, BuiltInFunction
-from exo_context import Context
-from exo_interpreter import Interpreter
-from exo_interpreter import SymbolTable
-from exo_lexer import Lexer
-from exo_parser import Parser
-
 import re
+
+from exo_classes.exo_classes import BuiltInFunction, Number
+from exo_classes.exo_context import Context
+from exo_lang.exo_interpreter import Interpreter, SymbolTable
+from exo_lang.exo_lexer import Lexer
+from exo_lang.exo_parser import Parser
 
 global_symbol_table = SymbolTable()
 global_symbol_table.set('null', None, Number(0), None)

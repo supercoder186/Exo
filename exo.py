@@ -1,5 +1,4 @@
-import exo_runner
-
+import exo_lang.exo_runner as exo_runner
 import sys
 
 args = sys.argv
