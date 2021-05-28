@@ -1,6 +1,6 @@
-import exo_classes.exo_token as exo_token
-from exo_errors.exo_errors import IllegalCharError, ExpectedCharError
-from exo_classes.exo_token import ALPHANUMERIC, DIGITS, KEYWORDS, TYPES, LETTERS, Token
+from ..exo_classes import exo_token
+from ..exo_errors.exo_errors import IllegalCharError, ExpectedCharError
+from ..exo_classes.exo_token import ALPHANUMERIC, DIGITS, KEYWORDS, TYPES, LETTERS, Token
 
 
 class Lexer:

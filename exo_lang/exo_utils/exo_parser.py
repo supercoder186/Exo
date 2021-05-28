@@ -1,6 +1,6 @@
-import exo_classes.exo_token as exo_token
-from exo_errors.exo_errors import InvalidSyntaxError
-from exo_classes.exo_node import NumberNode, StringNode, ListNode, BinOpNode, UnaryOpNode, VarAssignNode, VarAccessNode, IfNode, \
+from ..exo_classes import exo_token
+from ..exo_errors.exo_errors import InvalidSyntaxError
+from ..exo_classes.exo_node import NumberNode, StringNode, ListNode, BinOpNode, UnaryOpNode, VarAssignNode, VarAccessNode, IfNode, \
     WhileNode, ForNode, FunctionDefNode, FunctionCallNode, ReturnNode
 
 
