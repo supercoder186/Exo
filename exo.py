@@ -1,5 +1,6 @@
 import exo_lang.exo_runner as exo_runner
 import sys
+import os
 
 args = sys.argv
 len_args = len(args)
@@ -12,7 +13,7 @@ elif len_args < 2:
     print('No filename argument provided, reverting to test.exo')
     fn = 'test.exo'
 else:
-    fn = sys.argv[1]
+    fn = os.path.abspath(sys.argv[1])
 
 with open(fn) as file:
     code = file.read()
