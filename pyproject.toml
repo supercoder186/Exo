@@ -7,7 +7,7 @@ homepage = "https://github.com/supercoder186/Exo-Python"
 repository = "https://github.com/supercoder186/Exo-Python"
 
 [tool.poetry.dependencies]
-python = "^3.4"
+python = "^3.5"
 
 [tool.poetry.dev-dependencies]
 
