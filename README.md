@@ -1,4 +1,4 @@
-# Exo-Python
+# Exo
 The is a programming language designed to be simple and fast, written in python
 
 <a name="Installation"></a>

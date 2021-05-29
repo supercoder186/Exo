@@ -1,6 +1,7 @@
 [tool.poetry]
 name = "exo-lang"
-version = "0.1.0"
+readme = "README.md"
+version = "0.1.1"
 description = "A programming language designed to be simple and fast, written in python"
 authors = ["supercoder186 <aadit.kolar@gmail.com>"]
 homepage = "https://github.com/supercoder186/Exo-Python"
