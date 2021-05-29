@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "exo-lang"
 readme = "README.md"
-version = "0.1.1"
+version = "0.1.2"
 description = "A programming language designed to be simple and fast, written in python"
 authors = ["supercoder186 <aadit.kolar@gmail.com>"]
-homepage = "https://github.com/supercoder186/Exo-Python"
-repository = "https://github.com/supercoder186/Exo-Python"
+homepage = "https://github.com/supercoder186/Exo"
+repository = "https://github.com/supercoder186/Exo"
 
 [tool.poetry.dependencies]
 python = "^3.5"

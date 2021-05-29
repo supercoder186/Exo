@@ -29,4 +29,4 @@ add dependencies and more!
 
 
 For larger changes, please open an issue
-[here](https://github.com/supercoder186/Exo-Python/issues)
+[here](https://github.com/supercoder186/Exo/issues)

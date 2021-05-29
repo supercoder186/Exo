@@ -1,5 +1,5 @@
 from ..exo_classes import exo_token
-from ..exo_classes.exo_classes import Number, String, List, Function
+from ..exo_classes.exo_classes import BaseFunction, Number, String, List, Function
 from ..exo_errors.exo_errors import RTError
 from ..exo_classes.exo_node import VarAssignNode, ForNode, FunctionDefNode
 
@@ -149,13 +149,19 @@ class Interpreter:
             return res.failure(error)
         else:
             return res.success(number)
+    
+    def eval_var(self, var):
+        if isinstance(var, BaseFunction):
+            return True
+        else:
+            return True if var.value else False
 
     def visit_VarAccessNode(self, node, context):
         res = RTResult()
         var_name = node.var_name_tok.value
         value = context.symbol_table.get(var_name)
 
-        if not value.value:
+        if not self.eval_var(value):
             return res.failure(RTError(
                 node.pos_start, node.pos_end, f"'{var_name} is not defined'", context
             ))
@@ -296,6 +302,9 @@ class Interpreter:
         args = []
 
         value_to_call = res.register(self.visit(node.call_node, context))
+        if res.error:
+            return res
+        
         value_to_call.context = context
         if res.error:
             return res
