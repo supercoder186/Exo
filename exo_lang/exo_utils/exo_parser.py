@@ -17,8 +17,8 @@ class Parser:
         statements = [res]
         while not res.error and self.current_tok.type != exo_token.TT_EOF:
             if self.prev_tok.type != exo_token.TT_NEWLINE:
-                return res.failure(
-                    InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected newline!'))
+                return [res.failure(
+                    InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected newline after statement'))]
 
             res = self.statement()
             statements.append(res)
@@ -34,8 +34,9 @@ class Parser:
             self.tok_idx += 1
             if self.tok_idx < len(self.tokens):
                 self.current_tok = self.tokens[self.tok_idx]
-                if self.tok_idx > 0:
-                    self.prev_tok = self.tokens[self.tok_idx - 1]
+        
+        if self.tok_idx > 0:
+            self.prev_tok = self.tokens[self.tok_idx - 1]
 
         return self.current_tok
 
@@ -82,7 +83,7 @@ class Parser:
 
             if self.prev_tok.type != exo_token.TT_NEWLINE:
                 return res.failure(
-                    InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected newline!'))
+                    InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected newline'))
 
         res.register_advance()
         self.advance()
@@ -124,7 +125,7 @@ class Parser:
         while self.current_tok.type != exo_token.TT_RPAREN:
             if self.current_tok.type != exo_token.TT_TYPE:
                 return res.failure(InvalidSyntaxError(
-                    self.current_tok.pos_start, self.current_tok.pos_end, 'Expected variable type!'))
+                    self.current_tok.pos_start, self.current_tok.pos_end, 'Expected variable type'))
 
             type_toks.append(self.current_tok)
 
@@ -133,7 +134,7 @@ class Parser:
 
             if self.current_tok.type != exo_token.TT_IDENTIFIER:
                 return res.failure(InvalidSyntaxError(
-                    self.current_tok.pos_start, self.current_tok.pos_end, 'Expected variable identifier!'))
+                    self.current_tok.pos_start, self.current_tok.pos_end, 'Expected variable identifier'))
 
             arg_toks.append(self.current_tok)
 
@@ -213,7 +214,7 @@ class Parser:
             if res.error:
                 return res.failure(
                     InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
-                                       'Expected if, while, function def, variable assignment or numeric expression!'
+                                       'Expected if, while, function def, variable assignment or numeric expression'
                                        ), override=True)
             return res.success(statement)
 
@@ -230,7 +231,7 @@ class Parser:
 
         if self.current_tok.type != exo_token.TT_IDENTIFIER:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
-                                                  'Expected an identifier!'))
+                                                  'Expected an identifier'))
 
         fun_name_tok = self.current_tok
         res.register_advance()
@@ -346,6 +347,9 @@ class Parser:
                 return res
 
             return res.success(ReturnNode(num_res))
+        else:
+            return res.failure(
+                InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, 'Expected a type or keyword'))
 
     def var_assignment(self):
         res = ParseResult()
@@ -556,7 +560,8 @@ class Parser:
         elif tok.type == exo_token.TT_LPAREN:
             res.register_advance()
             self.advance()
-            expr = res.register(self.expr())
+            abc = self.expr()
+            expr = res.register(abc)
             if res.error:
                 return res
 

@@ -1,4 +1,4 @@
-from .exo_utils import exo_runner
+from exo_lang.exo_utils import exo_runner
 import sys
 import os
 
@@ -28,3 +28,6 @@ def main():
         _value, error = exo_runner.run(filename, code)
         if error:
             print(error.as_string())
+
+if __name__ == '__main__':
+    main()
