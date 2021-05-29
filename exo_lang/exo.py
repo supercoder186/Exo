@@ -5,9 +5,11 @@ import os
 def shell():
     while True:
         text = input('Exo >>> ')
-        _, error = exo_runner.run('<stdin>', text)
+        value, error = exo_runner.run('<stdin>', text)
         if error:
             print(error.as_string())
+        elif value.value:
+            print(value)
 
 def main():
     args = sys.argv
