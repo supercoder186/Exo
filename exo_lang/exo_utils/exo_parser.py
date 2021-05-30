@@ -305,6 +305,9 @@ class Parser:
         if self.current_tok.type != exo_token.TT_TYPE:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
                                                   'Expected a type'))
+        elif self.current_tok.value in ('string', 'var'):
+            return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
+                                                  'Cannot use type of string or var'))
 
         var_type_tok = self.current_tok
         res.register_advance()

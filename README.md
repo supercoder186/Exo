@@ -108,6 +108,53 @@ while (condition){
 
 While statements can also be nested inside one another and combined with If statements flexibly.
 
+```
+int a = 1
+while (a < 5) {
+  int a = a + 1
+  print(a)
+}
+```
+
+<a name="for loops"></a>
+### For Loops
+
+A for loop can be represented like so:
+
+```
+for type(int / float) identifier in (initial, final, step){
+  statements
+}
+```
+Note that initial is inclusive and final is exclusive
+For example:
+
+```
+for int a in (1, 5, 1){
+  print(a)
+}
+```
+
+Will output: 
+```
+1
+2
+3
+4
+```
+
+These will not work:
+
+```
+for var b in (1, 5, 2){
+  print(b)
+}
+
+for string c in ("hi", "hiiiii", "i"){
+  print(c)
+}
+```
+
 <a name="lists"></a>
 ### Lists
 
