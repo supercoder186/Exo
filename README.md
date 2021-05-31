@@ -256,11 +256,13 @@ concat("Hello", 1) # This will also run fine
 concat(1, 1) # This will throw an error, since a1 is supposed to be of type string
 ```
 If there is no return statement, the function will return 0
+IMPORTANT NOTE: Nested return statements are not supported as of v0.1.x
+Support will be added for these in the future
 
 This is the syntax to call a function:
 
 ```
-var z = function(arg, arg2, ...)
+function(arg, arg2, ...)
 ```
 
 The function call can be used just like a normal variable. For example:
