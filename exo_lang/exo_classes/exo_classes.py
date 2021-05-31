@@ -401,10 +401,11 @@ class Function(BaseFunction):
             return res
 
         for node in self.body_nodes:
-            interpreter.visit(node, exec_ctx)
+            res.register(interpreter.visit(node, exec_ctx))
 
-        if res.error:
-            return res
+            if res.error:
+                return res
+        
         value = interpreter.visit(self.return_node, exec_ctx)
         if isinstance(value, RTResult):
             value = res.register(value)

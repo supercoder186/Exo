@@ -1,5 +1,5 @@
 from ..exo_classes import exo_token
-from ..exo_classes.exo_classes import BaseFunction, Number, String, List, Function
+from ..exo_classes.exo_classes import Value, BaseFunction, Number, String, List, Function
 from ..exo_errors.exo_errors import RTError
 from ..exo_classes.exo_node import VarAssignNode, ForNode, FunctionDefNode
 
@@ -16,7 +16,7 @@ class SymbolTable:
         if value:
             return value[1]
         else:
-            return Number(0)
+            return Value()
 
     def set(self, name, type_tok, value, context):
         if type_tok:
@@ -141,7 +141,7 @@ class Interpreter:
 
         error = None
         if node.op_tok.type == exo_token.TT_MINUS:
-            number, error = number.multiply_with(Number(-1)), None
+            number, error = number.multiply_with(Number(-1))
         elif node.op_tok.matches(exo_token.TT_KEYWORD, 'not'):
             number, error = number.self_not()
 
@@ -154,7 +154,7 @@ class Interpreter:
         if isinstance(var, BaseFunction):
             return True
         else:
-            return True if var.value else False
+            return True if var.type else False
 
     def visit_VarAccessNode(self, node, context):
         res = RTResult()
@@ -163,7 +163,7 @@ class Interpreter:
 
         if not self.eval_var(value):
             return res.failure(RTError(
-                node.pos_start, node.pos_end, f"'{var_name} is not defined'", context
+                node.pos_start, node.pos_end, f"'{var_name}' is not defined", context
             ))
 
         if node.index_node:
@@ -217,7 +217,7 @@ class Interpreter:
     def visit_IfNode(self, node, context):
         res = RTResult()
         for condition, statements in node.cases:
-            condition_value = res.register(self.visit(condition))
+            condition_value = res.register(self.visit(condition, context))
             if res.error:
                 return res
 
@@ -311,7 +311,9 @@ class Interpreter:
         value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end)
 
         for arg_node in node.arg_nodes:
-            args.append(res.register(self.visit(arg_node, context)))
+            valx = self.visit(arg_node, context)
+            val = res.register(valx)
+            args.append(val)
             if res.error:
                 return res
 

@@ -12,6 +12,9 @@ def shell():
             print(value)
 
 def main():
+    from exo_lang import __version__
+    print('Exo v' + __version__)
+
     args = sys.argv
     len_args = len(args)
 

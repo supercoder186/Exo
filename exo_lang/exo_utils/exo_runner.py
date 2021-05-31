@@ -39,6 +39,8 @@ def run(file_name, text):
 
     for statement in ast:
         result = interpreter.visit(statement.node, context)
+        if result.error:
+            return result.value, result.error
 
     if result:
         return result.value, result.error
