@@ -311,9 +311,7 @@ class Interpreter:
         value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end)
 
         for arg_node in node.arg_nodes:
-            valx = self.visit(arg_node, context)
-            val = res.register(valx)
-            args.append(val)
+            args.append(res.register(self.visit(arg_node, context)))
             if res.error:
                 return res
 

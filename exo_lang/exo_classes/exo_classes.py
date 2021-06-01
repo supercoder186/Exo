@@ -492,3 +492,15 @@ class BuiltInFunction(BaseFunction):
         return RTResult().success(Number(number))
 
     execute_input_int.arg_names = []
+
+    def execute_mod(self, exec_ctx):
+        from ..exo_utils.exo_interpreter import RTResult
+        x = exec_ctx.symbol_table.get('x')
+        y = exec_ctx.symbol_table.get('y')
+        types = ['int', 'float']
+        if not (x.type in types and y.type in types):
+            return RTResult().failure(RTError(x.pos_start, y.pos_end, 'Illegal types! Only int and float are allowed', exec_ctx))
+        
+        return RTResult().success(Number(x.value % y.value))
+
+    execute_mod.arg_names = ['x', 'y']

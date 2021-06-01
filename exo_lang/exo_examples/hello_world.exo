@@ -1,0 +1,3 @@
+# This is the first program you write in Exo! It simply prints "Hello World"
+print("Hello" + " " + "World!")
+# Feel free to tinker around with this, using variables and the like in order to print the same thing :)

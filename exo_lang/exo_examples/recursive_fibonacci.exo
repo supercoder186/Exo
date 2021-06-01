@@ -1,0 +1,17 @@
+fun int fibonacci(int degree){
+    var return_value = 0
+    if(degree <= 0){
+        var return_value = -1
+    } elif (degree == 1) {
+        var return_value = 0
+    } elif (degree == 2) {
+        var return_value = 1
+    } else {
+        var return_value = fibonacci(degree - 2) + fibonacci(degree - 1)
+    }
+    return return_value
+}
+
+for int a in (1, 10, 1){
+    print(fibonacci(a))
+}

@@ -1,0 +1,13 @@
+# Problem statement can be found at https://projecteuler.net/problem=1
+fun int answer(int limit){
+    int sum = 0
+    for int i in (1, limit, 1){
+        if(mod(i, 3) == 0 or mod(i, 5) == 0){
+            int sum = sum + i
+        }
+    }
+
+    return sum
+}
+
+print(answer(1000))

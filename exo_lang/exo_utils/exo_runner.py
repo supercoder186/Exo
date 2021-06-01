@@ -10,9 +10,10 @@ global_symbol_table = SymbolTable()
 global_symbol_table.set('null', None, Number(0), None)
 global_symbol_table.set('false', None, Number(0), None)
 global_symbol_table.set('true', None, Number(1), None)
-global_symbol_table.set("print", None, BuiltInFunction("print"), None)
-global_symbol_table.set("input", None, BuiltInFunction("input"), None)
-global_symbol_table.set("input_int", None, BuiltInFunction("input_int"), None)
+global_symbol_table.set("print", None, BuiltInFunction('print'), None)
+global_symbol_table.set("input", None, BuiltInFunction('input'), None)
+global_symbol_table.set("input_int", None, BuiltInFunction('input_int'), None)
+global_symbol_table.set('mod', None, BuiltInFunction('mod'), None)
 
 def filter_comments(text):
     regexpr = r'[ ]*[#]+.*'
