@@ -1,4 +1,4 @@
-from exo_lang.exo_utils import exo_runner
+from exo_language.exo_utils import exo_runner
 import sys
 import os
 
@@ -12,7 +12,7 @@ def shell():
             print(value)
 
 def main():
-    from exo_lang import __version__
+    from exo_language import __version__
     print('Exo v' + __version__)
 
     args = sys.argv

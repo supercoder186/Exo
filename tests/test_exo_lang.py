@@ -1,4 +1,4 @@
-from exo_lang import __version__
+from exo_language import __version__
 
 
 def test_version():

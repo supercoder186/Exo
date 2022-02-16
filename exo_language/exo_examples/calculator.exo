@@ -1,0 +1,27 @@
+# This is a piece of code designed to demonstrate the different built in functions in exo
+# Along with some language features. 
+
+print("What operation do you want to perform? (add, subtract, multiply, divide, mod)")
+string operation = input()
+var a = []
+
+for int i in (0, 2, 1){
+    var count = i + 1
+    print("Enter number " + count)
+    var a[i] = input_int()
+}
+
+if (operation == "add") {
+    print(a[0] + a[1])
+} elif (operation == "subtract") {
+    var x = a[0] - a[1]
+    print(x)
+} elif (operation == "multiply") {
+    print(a[0] * a[1])
+} elif (operation == "divide") {
+    print(a[0] / a[1])
+} elif (operation == "mod") {
+    print(mod(a[0], a[1]))
+} else {
+    print ("Illegal operation!")
+}

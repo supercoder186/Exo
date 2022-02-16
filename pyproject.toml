@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "exo-lang"
+name = "exo-language"
 readme = "README.md"
 version = "0.1.4"
 description = "A programming language designed to be simple and fast, written in python"
@@ -13,7 +13,7 @@ python = "^3.5"
 [tool.poetry.dev-dependencies]
 
 [tool.poetry.scripts]
-exo = "exo_lang.exo:main"
+exo = "exo_language.exo:main"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
