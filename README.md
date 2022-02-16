@@ -6,7 +6,7 @@ The is a programming language designed to be simple and fast, written in python
 This project was built on Python 3
 To install Exo, (after you install python) run the command:
 ```shell
-pip install exo
+pip install exo-language
 ```
 
 <a name="Usage"></a>
