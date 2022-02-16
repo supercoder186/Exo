@@ -4,18 +4,18 @@ The is a programming language designed to be simple and fast, written in python
 <a name="Installation"></a>
 ## Installation
 This project was built on Python 3
-
-It does not have any dependencies. You can simply clone the repository
+To install Exo, (after you install python) run the command:
+```shell
+pip install exo
+```
 
 <a name="Usage"></a>
 ## Usage
 ### Running the Exo code
 
-Exo.py is the program that will run the code. Run the command 
 ```shell
-python exo path/to/file.exo
+exo path/to/file.exo
 ```
-
 
 <a name="LanguageSpecification"></a>
 ## Language Specification
